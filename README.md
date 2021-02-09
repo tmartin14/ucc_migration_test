@@ -13,7 +13,7 @@ This utility creates a 'package' directory that can be fed into the ucc-gen pyth
 
 Your new source code will now be located in the `/ucc-convert/package` directory and is setup to run ucc-gen.
 
-Now you can execute ucc-gen and the new TA will be written to an `ucc-convert/output` directory.
+Now you can execute `ucc-gen` and the new TA will be written to an `ucc-convert/output` directory.
 
 
 #### Links
