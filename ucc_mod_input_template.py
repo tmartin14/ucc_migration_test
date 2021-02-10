@@ -64,42 +64,53 @@ def get_account_details(session_key, account_name, logger):
    
 class MYEXAMPLETA(smi.Script):
  
-   def __init__(self):
-       super(MYEXAMPLETA, self).__init__()
- 
+    def __init__(self):
+        super(MYEXAMPLETA, self).__init__()
 SCHEME_LOCATION
 
-
-   def validate_input(self, definition):
+    def validate_input(self, definition):
 VALIDATION_LOCATION       
 
 
-   def stream_events(self, inputs, ew):
- 
-       meta_configs = self._input_definition.metadata
-       session_key = meta_configs['session_key']
-      
-       input_items = {}
-       input_name = list(inputs.inputs.keys())[0]
-       input_items = inputs.inputs[input_name]
-      
-       # Generate logger with input name
-       _, input_name = (input_name.split('//', 2))
-       logger = log.Logs().get_logger('{}_input'.format(APP_NAME))
- 
-       # Log level configuration
-       log_level = get_log_level(session_key, logger)
-       logger.setLevel(log_level)
-       logger.debug("Modular input invoked.")      
+    def stream_events(self, inputs, ew):
+        meta_configs = self._input_definition.metadata
+        session_key = meta_configs['session_key']
+
+        input_items = {}
+        input_name = list(inputs.inputs.keys())[0]
+        input_items = inputs.inputs[input_name]
+
+        # Generate logger with input name
+        _, input_name = (input_name.split('//', 2))
+        logger = log.Logs().get_logger('{}_input'.format(APP_NAME))
+
+        # Log level configuration
+        log_level = get_log_level(session_key, logger)
+        logger.setLevel(log_level)
+        logger.debug("Modular input invoked.")      
 
 STREAM_EVENTS_LOCATION
 
+        logger.debug("Modular input completed")
 
 
-       logger.debug("Modular input completed")
+    #response = helper.send_http_request(url, "GET", headers=headers,  parameters=parameters, payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
+    def send_http_request(url, method, headers, parameters, payload, cookies, verify, cert, timeout, use_proxy):
+
+        try:
+            if method == "POST":
+                r = requests.post(url, headers=headers, data=json.dumps(payload))
+            else:
+                r = requests.get((url, headers=headers, data=json.dumps(payload))
+            
+            r.raise_for_status()
+        except Exception as e:
+            raise e
+        return r
 
 
-if __name__ == '__main__':
-   exit_code = MYEXAMPLETA().run(sys.argv)
-   sys.exit(exit_code)
- 
+
+    if __name__ == '__main__':
+        exit_code = MYEXAMPLETA().run(sys.argv)
+        sys.exit(exit_code)
+
