@@ -8,7 +8,6 @@ if [ $# -eq 0 ]
   else
     AOB_TA_DIR="$1"
 fi
-AOB_TA_DIR_lowercase=$(echo "$AOB_TA_DIR" | tr '[:upper:]' '[:lower:]')
 
 ### Check if the directory exists, if not, exit ###
 if [ ! -d "$AOB_TA_DIR" ] 
@@ -16,6 +15,10 @@ then
     echo "Directory /$AOB_TA_DIR DOES NOT exists." 
     exit 9999 # die with error code 9999
 fi
+
+#remove any traiing / from the dir name
+AOB_TA_DIR=${1%/}
+AOB_TA_DIR_lowercase=$(echo "$AOB_TA_DIR" | tr '[:upper:]' '[:lower:]')
 
 # create a 'package' directory and move all files from the existing TA into it
 if [ -d ./package ]
@@ -57,6 +60,7 @@ do
     STREAM_EVENTS=$(echo "$STREAM_EVENTS" | sed 's/helper.get_arg/input_items.get/g')
     STREAM_EVENTS=$(echo "$STREAM_EVENTS" | sed 's/helper.get_input_stanza_names()/input_name/g')
     STREAM_EVENTS=$(echo "$STREAM_EVENTS" | sed 's/helper.log_/logger./g')
+    STREAM_EVENTS=$(echo "$STREAM_EVENTS" | sed 's/.*helper./#fixme please &/g')
     #echo "$STREAM_EVENTS"
 
 
