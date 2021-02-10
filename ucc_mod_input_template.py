@@ -71,8 +71,9 @@ SCHEME_LOCATION
 
 
    def validate_input(self, definition):
-       pass
-       
+VALIDATION_LOCATION       
+
+
    def stream_events(self, inputs, ew):
  
        meta_configs = self._input_definition.metadata
