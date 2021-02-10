@@ -14,7 +14,7 @@ from solnlib import log
 from solnlib.modular_input import checkpointer
  
 APP_NAME = __file__.split(op.sep)[-3]
-CONF_NAME = "ta_myexampleta"
+CONF_NAME
  
 def get_log_level(session_key, logger):
    """
@@ -45,7 +45,7 @@ def get_account_details(session_key, account_name, logger):
    This function retrieves account details from addon configuration file.
    :param session_key: session key for particular modular input.
    :param account_name: account name configured in the addon.
-   :param logger: provides logger of current input.
+   :param logger: provides logger of current input. 
    :return : account details in form of a dictionary.   
    """
    try:
@@ -62,10 +62,30 @@ def get_account_details(session_key, account_name, logger):
            traceback.format_exc()))
        sys.exit(1)   
    
+
+#response = helper.send_http_request(url, "GET", headers=headers,  parameters=parameters, payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
+def send_http_request(url, method, headers, parameters, payload, cookies, verify, cert, timeout, use_proxy):
+    try:
+        if method == "GET":
+            r = requests.get(url, headers=headers, data=json.dumps(payload))
+        else:
+            r = requests.post(url, headers=headers, data=json.dumps(payload))
+        
+        r.raise_for_status()
+
+    except Exception as e:
+        raise e
+    return r
+
+
+
+
+
 class MYEXAMPLETA(smi.Script):
  
     def __init__(self):
         super(MYEXAMPLETA, self).__init__()
+
 SCHEME_LOCATION
 
     def validate_input(self, definition):
@@ -94,23 +114,8 @@ STREAM_EVENTS_LOCATION
         logger.debug("Modular input completed")
 
 
-    #response = helper.send_http_request(url, "GET", headers=headers,  parameters=parameters, payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
-    def send_http_request(url, method, headers, parameters, payload, cookies, verify, cert, timeout, use_proxy):
 
-        try:
-            if method == "POST":
-                r = requests.post(url, headers=headers, data=json.dumps(payload))
-            else:
-                r = requests.get((url, headers=headers, data=json.dumps(payload))
-            
-            r.raise_for_status()
-        except Exception as e:
-            raise e
-        return r
-
-
-
-    if __name__ == '__main__':
-        exit_code = MYEXAMPLETA().run(sys.argv)
-        sys.exit(exit_code)
+if __name__ == '__main__':
+    exit_code = MYEXAMPLETA().run(sys.argv)
+    sys.exit(exit_code)
 
