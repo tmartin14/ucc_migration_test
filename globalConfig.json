@@ -2,7 +2,7 @@
     "meta": {
         "name": "Splunk_TA_New_Relic",
         "displayName": "Splunk Add-on for New Relic",
-        "version": "0.0.0R508b426",
+        "version": "0.0.0R6de5add",
         "apiVersion": "3.0.0",
         "restRoot": "Splunk_TA_New_Relic",
         "schemaVersion": "0.0.1"

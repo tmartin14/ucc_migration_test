@@ -3,15 +3,19 @@ import import_declare_test
 import sys
 import json
 import os
-import os.path as op
 import time
 import datetime
+import os.path as op
+#####  New
 import traceback
 import requests
 from splunklib import modularinput as smi
 from solnlib import conf_manager
 from solnlib import log
 from solnlib.modular_input import checkpointer
+# 2-16
+import splunk_resthelper.base_modinput
+
  
 APP_NAME = __file__.split(op.sep)[-3]
 CONF_NAME

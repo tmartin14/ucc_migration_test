@@ -8,12 +8,12 @@ This utility creates a 'package' directory that can be fed into the ucc-gen pyth
 
 #### Setup:
 1. Clone this repository to your local machine
-2. Copy your TA's entire directory into this directory `/ucc-convert/Splunk_TA_XXX`
+2. Copy your TA's entire directory into this directory `/ucc-migration_test/Splunk_TA_XXX`
 3. Run the convert.sh script from the root directory passing in the name of the TA’s directory    `./convert.sh Splunk_TA_XXX` 
 
-Your new source code will now be located in the `/ucc-convert/package` directory and is setup to run ucc-gen.
+Your new source code will now be located in the `/ucc-migration_test/package` directory and is setup to run ucc-gen.
 
-Now you can execute `ucc-gen` and the new TA will be written to an `ucc-convert/output` directory.
+Now you can execute `ucc-gen` and the new TA will be written to an `ucc-migration_test/output` directory.
 
 
 #### Links
