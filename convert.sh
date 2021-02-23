@@ -1,13 +1,15 @@
 #! /bin/bash
 
-##########    Find the FIXME section for the file name     & 
-############   figure out how to make GlobalConfig.json have the right pathing -- it's looking here:  /opt/splunk/etc/appserver/static/js/build/globalConfig.json    
+# Splunk_TA_New_Relic was used as the example source code for this project
 
-#Splunk_TA_New_Relic was used as the example source code for this project
+# TODO:
+#   make it work for python2 ???
+#   fix the duplicated imports between the TA and imports.py
+#   Test to see if the new TA respects the proxy settings
+#   Test checkpointing
+#   fix inputs that are NOT mod_input_XXX.py
 
-# the LIB_DIR_COMMAND will be added after importing sys and os.  this needs to be in splunk_resthelper.base_modinput as well in each  input's code
-LIB_DIR_COMMAND='sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))'
-LIB_DIR_COMMAND='os.path.abspath("../..")'
+
 
 # -------------------------------------------------------------------------------
 #   Check input arguments and see if we're setup correctly
@@ -200,13 +202,5 @@ rm -rf ./package/bin/${AOB_TA_DIR_lowercase}_declare.py
 
 echo Finished.
 echo 
-
-echo ##########  Items still missing    ########
-echo 1. Does the new TA respect the proxy settings?
-echo 2. Need to replace helper functions -- send_http_request, new_event, get_output_index, etc.
-echo 3. What to do with checkpointing?
-echo 4. go ahead and run ucc-gen 
 echo
 echo
-echo
-
