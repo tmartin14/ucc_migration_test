@@ -68,35 +68,6 @@ echo splunktaucclib==4.0.7 > ./package/lib/requirements.txt
 cat ./package/bin/input_module_*.py | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json, re)' | sed -n 's/.*import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
 
 # -------------------------------------------------------------------------------
-# move the 'helper files' from AOB into a new directory (splunk_resthelper)
-# -------------------------------------------------------------------------------
-mv ./package/bin/$AOB_TA_DIR_lowercase/aob_py3/splunk_aoblib ./package/bin/splunk_resthelper
-mv ./package/bin/$AOB_TA_DIR_lowercase/aob_py3/modinput_wrapper/base_modinput.py ./package/bin/splunk_resthelper/.
-
-# -------------------------------------------------------------------------------
-# modify the packge names in base_modinput.py to reflect the new structure just created for splunk_resthelper
-# -------------------------------------------------------------------------------
-sed -i '' 's/from splunk_aoblib./from splunk_resthelper./g' ./package/bin/splunk_resthelper/base_modinput.py
-sed -i '' 's/from solnlib.packages.splunklib import modularinput as smi/from splunklib import modularinput as smi/' ./package/bin/splunk_resthelper/base_modinput.py
-
-# -------------------------------------------------------------------------------
-# add the /lib directory to the base_modiput code
-# -------------------------------------------------------------------------------
-sed -i '' '1 a\ 
-import import_declare_test
-
-
-' ./package/bin/splunk_resthelper/base_modinput.py
-
-# -------------------------------------------------------------------------------
-# fix the directory structure lookup for globalConig.json   (AOB was 5 levels deep, now we're only 3) 
-#    i.e.: config_path = "/opt/splunk/etc/apps/Splunk_TA_New_Relic/appserver/static/js/build/globalConfig.json"
-# -------------------------------------------------------------------------------
-sed -i '' 's/config_path = os.path.join(dirname(dirname(dirname(dirname(dirname(__file__))))),/config_path = os.path.join(dirname(dirname(dirname(__file__))),/' ./package/bin/splunk_resthelper/base_modinput.py
-sed -i '' 's/basedir = dirname(dirname(dirname(dirname((dirname(__file__))))))/basedir = dirname(dirname(dirname(__file__)))/' ./package/bin/splunk_resthelper/setup_util.py
-
-
-# -------------------------------------------------------------------------------
 #          Now let's start processing the inputs
 # -------------------------------------------------------------------------------
 # let's work from the ./package/bin directory
@@ -115,6 +86,7 @@ do
       # Copy the validate_input code from AOB's template file (input_module_$OUTPUT)
       # Copy the collect_events code from AOB's template file (input_module_$OUTPUT)
 
+
     # -------------------------------------------------------------------------------
     # Start with the new imports added to our current source code file
     # -------------------------------------------------------------------------------
@@ -123,23 +95,22 @@ do
 
     # -------------------------------------------------------------------------------
     # Remove these:
-    #   1. The old import input_module_$OUTPUT as input_module statement 
-    #   2. The old import $AOB_TA_DIR_lowercase_declare statement
+    #   1. The old import $AOB_TA_DIR_lowercase_declare statement
+    #   2. The old import input_module_$OUTPUT as input_module statement 
     #   3. The old from solnlib.packages.splunklib import modularinput as smi  statement
+    #   4. The old import modinput_wrapper.base_modinput statement
     # -------------------------------------------------------------------------------
-    new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^import splunk_ta_new_relic_declare/d')        #FIX THIS  -- just testing with the real name
+    #new_input_source=$(echo "$new_input_source" | sed '/^import $AOB_TA_DIR_lowercase_declare/d')        #FIX THIS  -- just testing with the real name
+    new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^from solnlib.packages.splunklib import modularinput as smi/d')
-    #echo "$new_input_source" 
+    new_input_source=$(echo "$new_input_source" | sed '/import modinput_wrapper.base_modinput/d')
 
 
-    # Change the package name for base_modinput.py
-    new_input_source=$(echo "$new_input_source" | sed 's/modinput_wrapper.base_modinput/splunk_resthelper.base_modinput/g')
-
-    # include the /lib directory in this Add-On
-    #new_input_source=$(echo "$new_input_source" | sed '/^bin_dir = os.path.basename(__file__)/a sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))' )
-    #new_input_source=$(echo "$new_input_source" | sed "s/^bin_dir = os.path.basename(__file__)/&\ntest/")
-    #echo "$new_input_source" 
+    # -------------------------------------------------------------------------------
+    # change the reference for base_modinput to use the name in the imports.py 
+    # -------------------------------------------------------------------------------
+    new_input_source=$(echo "$new_input_source" | sed 's/(modinput_wrapper.base_modinput./(base_mi./')
 
     # -------------------------------------------------------------------------------
     # set single instance mode to false and remove excess code from $OUTPUT
