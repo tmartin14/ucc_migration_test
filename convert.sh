@@ -100,8 +100,8 @@ do
     #   3. The old from solnlib.packages.splunklib import modularinput as smi  statement
     #   4. The old import modinput_wrapper.base_modinput statement
     # -------------------------------------------------------------------------------
-    new_input_source=$(echo "$new_input_source" | sed '/^import splunk_ta_new_relic_declare/d')        #FIX THIS  -- just testing with the real name
-    #new_input_source=$(echo "$new_input_source" | sed '/^import $AOB_TA_DIR_lowercase_declare/d')        #FIX THIS  -- just testing with the real name
+    #new_input_source=$(echo "$new_input_source" | sed '/^import splunk_ta_new_relic_declare/d')        #FIX THIS  -- just testing with the real name
+    new_input_source=$(echo "$new_input_source" | sed "/^import ${AOB_TA_DIR_lowercase}_declare/d")
     new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^from solnlib.packages.splunklib import modularinput as smi/d')
     new_input_source=$(echo "$new_input_source" | sed '/import modinput_wrapper.base_modinput/d')
