@@ -5,7 +5,7 @@ echo ========== Running ucc-gen   ===========
 ucc-gen
 echo
 echo
-TA_DIR=Splunk_TA_AppDynamics
+TA_DIR=Splunk_TA_New_Relic
 echo   *******  TEMP FIX    *******
 echo       copying the modinput_wrapper directory into the lib directory
 cp -r ../addonfactory-ucc-library/splunktaucclib/modinput_wrapper ./output/${TA_DIR}/lib/splunktaucclib/modinput_wrapper

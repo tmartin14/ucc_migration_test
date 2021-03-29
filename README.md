@@ -2,11 +2,14 @@
 
 This file contains source for a Unix shell script to perform a migration of modular inputs from a Splunk Add-On Builder(AOB) generated souce base into a new Splunk UCC-based Add-On (a.k.a. TA).  
 
-The script copies the helper functions from AOB's python3 libraries and converts the appropriate code to a new directory in the new TA (/bin/splunk_resthelper).   There are a number of edits performed using sed, awk and grep that create a new TA in the package directory.  
+The script uses the helper functions from AOB's python3 libraries and merges the souce code from AOB-generated Inputs into a single file for each input.   There are a number of edits performed using sed, awk and grep that create a new TA in the package directory.    
 
-This script creates a package directory and moves the globalConfig.json file to the root directory providing the proper setup to execute the [addonfactory-ucc-generator](https://github.com/splunk/addonfactory-ucc-generator) utility.
+This script creates a `package` directory and moves the globalConfig.json file to the root directory providing the proper setup to execute the [addonfactory-ucc-generator](https://github.com/splunk/addonfactory-ucc-generator) utility.
 
 There may be additional edits required after running these scripts, but the idea is to get you 90+% of the way there. 
+
+### Note
+This utility has not yet been tested for migrating Alert Actions.  It has only been tested with custom python inputs and REST API calls previously created in Splunk Add-On Builder(AOB)
 
 ### Instructions
 1. Clone this repository to your local machine
