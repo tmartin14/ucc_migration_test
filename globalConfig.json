@@ -2,10 +2,9 @@
     "meta": {
         "name": "Splunk_TA_New_Relic",
         "displayName": "Splunk Add-on for New Relic",
-        "version": "0.0.0Rdf1a673",
+        "version": "2.2.0",
         "apiVersion": "3.0.0",
-        "restRoot": "Splunk_TA_New_Relic",
-        "schemaVersion": "0.0.1"
+        "restRoot": "Splunk_TA_New_Relic"
     },
     "pages": {
         "configuration": {
@@ -264,8 +263,8 @@
                             "defaultValue": "default",
                             "options": {
                                 "endpointUrl": "data/indexes",
-                                "createSearchChoice": true,
-                                "denyList": "^_.*$"
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
                             },
                             "required": true,
                             "validators": [
@@ -391,8 +390,8 @@
                             "defaultValue": "default",
                             "options": {
                                 "endpointUrl": "data/indexes",
-                                "createSearchChoice": true,
-                                "denyList": "^_.*$"
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
                             },
                             "required": true,
                             "validators": [

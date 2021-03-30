@@ -137,8 +137,11 @@ do
     COLLECT_EVENTS=$(sed -n '/^def collect_events(helper, ew):/,/^def /{ /^def collect_events(/p; /^def /d; p;}' input_module_$OUTPUT  | sed 's/def collect_events(helper, definition):/def collect_events(self, definition):/g' | sed 's/\(.*\)/    \1/')
     #echo COLLECT_EVENTS="$COLLECT_EVENTS"
 
-    # now we need to replace the AOB helper call with the actual collect_events logic from above
+    # now we need to replace the original call from to the 2nd file with the actual collect_events logic from above
     new_input_source=${new_input_source/        input_module.collect_events(self, ew)/"$COLLECT_EVENTS"}
+    # and remove the old function call & comment
+    new_input_source=$(echo "$new_input_source" | sed '/^    def collect_events(self, ew):/d')
+    new_input_source=$(echo "$new_input_source" | sed '/^        """write out the events"""/d')
     #echo "$new_input_source"
 
     # set the ta_config filename

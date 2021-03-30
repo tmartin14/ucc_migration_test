@@ -14,7 +14,7 @@ This utility has not yet been tested for migrating Alert Actions.  It has only b
 ### Instructions
 1. Clone this repository to your local machine
 2. Copy your TA's entire directory into this directory `/ucc-migration_test/Splunk_TA_XXX`
-3. Run the [convert.sh](https://github.com/tmartin14/ucc_migration_test/convert.sh)script from the root directory of this repository passing in the name of the TA’s directory    `./convert.sh Splunk_TA_XXX` 
+3. Run the [convert.sh](https://github.com/tmartin14/ucc_migration_test/convert.sh) script from the root directory of this repository passing in the name of the TA’s directory    `./convert.sh Splunk_TA_XXX` 
     Your new source code will now be located in the `/ucc-migration_test/package` directory and is setup to run ucc-gen.
 
 4. Execute `ucc-gen` and the new TA will be written to an `ucc-migration_test/output` directory.
