@@ -52,9 +52,25 @@ mkdir package
 cp -r ./$AOB_TA_DIR/ ./package
 
 # -------------------------------------------------------------------------------
-# copy the existing globalConfig.json file to the root directory
+# copy the existing globalConfig.json file to the root directory and set the template type to use  (in our case, we'll use "input_with_helper" for all)
 # -------------------------------------------------------------------------------
 cp ./package/appserver/static/js/build/globalConfig.json .
+
+# check to see if this globalConfig.json file has the "template": attribute   (if it does, there's no need to do anything)
+check_for_template=$(grep -c '"template":' globalConfig.json)
+if [[ $check_for_template -eq 0 ]]
+then
+    echo Updating globalConfig.json.   Adding \"template\":\"input_with_helper\" to each \"service\" 
+    # get the beginning section of the globalConfig.json file and save it for later
+    global_config_part1=$(cat globalConfig.json | sed -n  '/^            "services": \[/!p;//q')
+    # get the services section of the json and add the template attribute to each input
+    global_config_part2=$(cat globalConfig.json | sed -n '/^            "services": \[/,$p' | sed -E 's/"name": "([^"]+)",/"template":"input_with_helper",@                    "name": "\1",/g' | tr '@' '\n')
+    # now join both parts back together to recreate globalConfig.json
+    echo "$global_config_part1"$'\n'"$global_config_part2" > globalConfig.json 
+else
+    # no need for anything - this has already had the template added
+    echo template attribute already exists.  No changes to globalConfig required.
+fi
 
 # -------------------------------------------------------------------------------
 # ucc-based TA's will require the splunktaucclib library to be included in the build.  Add it here.
