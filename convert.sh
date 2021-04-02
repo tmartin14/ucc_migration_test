@@ -89,6 +89,14 @@ cat ./package/bin/input_module_*.py | grep import | grep -Ev '(import os|import 
 # let's work from the ./package/bin directory
 cd ./package/bin
 
+# -------------------------------------------------------------------------------
+#    Remove any py files for any REST input that have an accompanying .cc.json file   -- ucc-gen will recreate the python file for us
+# -------------------------------------------------------------------------------
+for REST_API_INPUT in $(ls *.cc.json | sed -e 's/\.cc.json$//')
+do
+    rm "$REST_API_INPUT".py 
+done
+
 for OUTPUT in $(ls input_module_*.py | xargs -L1 | awk -F"input_module_" '{print $2}')
 do
     echo Processing input named:   $OUTPUT
@@ -120,8 +128,6 @@ do
     new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^from solnlib.packages.splunklib import modularinput as smi/d')
     new_input_source=$(echo "$new_input_source" | sed '/import modinput_wrapper.base_modinput/d')
-
-###   Need to loop thru the files with .cc.json and remove any like-name .py files
 
     # -------------------------------------------------------------------------------
     # change the reference for base_modinput to use the name in the imports.py 
