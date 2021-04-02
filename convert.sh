@@ -93,7 +93,7 @@ for OUTPUT in $(ls input_module_*.py | xargs -L1 | awk -F"input_module_" '{print
 do
     echo Processing input named:   $OUTPUT
     # What do we need to do?
-      # Copy the new imports and the input source code file into a varialbe
+      # Copy the new imports and the input source code file into a variable
       #   -- It'll be easier to read the file into a variable and then process the variable (since the variable won't care about newline characters)
       # Remove the old AOB-required import statements
       # Change the package name for base_modinput.py
@@ -116,12 +116,12 @@ do
     #   3. The old from solnlib.packages.splunklib import modularinput as smi  statement
     #   4. The old import modinput_wrapper.base_modinput statement
     # -------------------------------------------------------------------------------
-    #new_input_source=$(echo "$new_input_source" | sed '/^import splunk_ta_new_relic_declare/d')        #FIX THIS  -- just testing with the real name
     new_input_source=$(echo "$new_input_source" | sed "/^import ${AOB_TA_DIR_lowercase}_declare/d")
     new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^from solnlib.packages.splunklib import modularinput as smi/d')
     new_input_source=$(echo "$new_input_source" | sed '/import modinput_wrapper.base_modinput/d')
 
+###   Need to loop thru the files with .cc.json and remove any like-name .py files
 
     # -------------------------------------------------------------------------------
     # change the reference for base_modinput to use the name in the imports.py 
