@@ -8,8 +8,10 @@ This script creates a `package` directory and moves the globalConfig.json file t
 
 There may be additional edits required after running these scripts, but the idea is to get you 90+% of the way there. 
 
-### Note
-This utility has not yet been tested for migrating Alert Actions.  It has only been tested with custom python inputs and REST API calls previously created in Splunk Add-On Builder(AOB)
+### Notes
+- This utility has not yet been tested for migrating Alert Actions.  It has only been tested with custom python inputs and REST API calls previously created in Splunk Add-On Builder(AOB)
+- The ucc-gen utility can be found here: [https://github.com/splunk/addonfactory-ucc-generator](https://github.com/splunk/addonfactory-ucc-generator)
+- ucc-gen is installed using `$ pip3 install splunk-add-on-ucc-framework`
 
 ### Instructions
 1. Clone this repository to your local machine
