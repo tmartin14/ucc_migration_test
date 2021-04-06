@@ -13,7 +13,7 @@
 # Did the user specify the directory?   If not , get it now
 if [ $# -eq 0 ]
   then
-    read -p 'Enter the directory for the AOB TA (in this folder): ' AOB_TA_DIR
+    read -p 'Enter the directory for the AOB TA (in this folder): ' AOB_TA_DIR 
   else
         AOB_TA_DIR="$1"
 fi
@@ -30,8 +30,12 @@ fi
 
 
 #remove any traiing / from the dir name
-AOB_TA_DIR=${1%/}
+AOB_TA_DIR=${AOB_TA_DIR%/}
 AOB_TA_DIR_lowercase=$(echo "$AOB_TA_DIR" | tr '[:upper:]' '[:lower:]')
+
+echo 
+echo Converting "$AOB_TA_DIR"...
+echo
 
 # -------------------------------------------------------------------------------
 #       Prepare this TA for ucc-gen
