@@ -1,14 +1,10 @@
 #! /bin/bash
+#    usage:    ./convert.sh TA_directory 
 
 # Splunk_TA_New_Relic was used as the example source code for this project
 
 # TODO:
-#   make it work for python2 ???
-#   fix the duplicated imports between the TA and imports.py
-#   Test to see if the new TA respects the proxy settings
-#   Test checkpointing
-#   fix inputs that are NOT mod_input_XXX.py
-
+#   add alert actions script modifications
 
 
 # -------------------------------------------------------------------------------
@@ -19,13 +15,16 @@ if [ $# -eq 0 ]
   then
     read -p 'Enter the directory for the AOB TA (in this folder): ' AOB_TA_DIR
   else
-    AOB_TA_DIR="$1"
+        AOB_TA_DIR="$1"
 fi
 
 ### Check if the directory exists, if not, exit ###
 if [ ! -d "$AOB_TA_DIR" ] 
 then
+    echo
     echo "Directory /$AOB_TA_DIR DOES NOT exists." 
+    echo "   Usage:    ./convert.sh TA_Directory"
+    echo
     exit 9999 # die with error code 9999
 fi
 
@@ -79,20 +78,49 @@ mkdir ./package/lib
 echo splunktaucclib==4.0.7 > ./package/lib/requirements.txt
 
 # -------------------------------------------------------------------------------
-# identify any additional imported libraries and add them to the requirements.txt file 
+# identify any additional imported libraries and add them to the requirements.txt file (exclude from xxx import yyy for now)
 # -------------------------------------------------------------------------------
-cat ./package/bin/input_module_*.py | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json, re)' | sed -n 's/.*import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
+#cat ./package/bin/input_module_*.py | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json, re)' | sed -n 's/.*import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
+cat ./package/bin/input_module_*.py | grep import | grep -Ev '(from |import os|import sys|import time|import datetime|import json | import json, re)' | sed -n 's/import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
 
 # -------------------------------------------------------------------------------
-#          Now let's start processing the inputs
+#  for any 'import from' statements let's see if the library is included in the TA's /bin directory.    If NOT, let's add it to the requuirements.txt file
 # -------------------------------------------------------------------------------
 # let's work from the ./package/bin directory
 cd ./package/bin
 
+import_froms=$(cat ./input_module_*.py | grep import | grep from | sed -n 's/from //p' | xargs -L1 | sort | uniq | awk '{print $1}' | cut -d. -f1)
+#echo "$import_froms"
+
+included_dirs=$(ls -d */ | sed '/\./d;s%/$%%' )
+#echo "$included_dirs"
+
+for i in $import_froms
+do
+    included=false
+    for x in $included_dirs
+    do
+        if [ "$i" == "$x" ] ; then
+            included=true
+        fi
+    done
+    if ! $included ; then
+        echo "      Adding $i to requirements.txt"
+        echo "$i" >>../../package/lib/requirements.txt
+    fi
+done
+echo "Finished processing import statements and libraries..."
+
+
+
+# -------------------------------------------------------------------------------
+#          Now let's start processing the individual inputs
+# -------------------------------------------------------------------------------
+
 # -------------------------------------------------------------------------------
 #    Remove any py files for any REST input that have an accompanying .cc.json file   -- ucc-gen will recreate the python file for us
 # -------------------------------------------------------------------------------
-for REST_API_INPUT in $(ls *.cc.json | sed -e 's/\.cc.json$//')
+for REST_API_INPUT in $(ls *.cc.json | sed -e 's/\.cc.json$//' 2> /dev/null)
 do
     rm "$REST_API_INPUT".py 
 done
@@ -112,10 +140,17 @@ do
 
 
     # -------------------------------------------------------------------------------
-    # Start with the new imports added to our current source code file
+    #  get all of the import statements for this input that are NOT in our imports.py
     # -------------------------------------------------------------------------------
-    new_input_source=$(cat ../../imports.py $OUTPUT)
-    #echo "$new_input_source"
+    cat ./input_module_$OUTPUT | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json| import json, re)'| sort | uniq >>./tmp_imports.py
+    
+
+    # -------------------------------------------------------------------------------
+    # Add the imports from imports.py and the imports from this input to the current source code file
+    # -------------------------------------------------------------------------------
+    new_input_source=$(cat ../../imports.py tmp_imports.py $OUTPUT)
+    rm tmp_imports.py
+
 
     # -------------------------------------------------------------------------------
     # Remove these:
