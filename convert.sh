@@ -79,7 +79,7 @@ fi
 # ucc-based TA's will require the splunktaucclib library to be included in the build.  Add it here.
 # -------------------------------------------------------------------------------
 mkdir ./package/lib
-echo splunktaucclib==4.0.7 > ./package/lib/requirements.txt
+echo splunktaucclib==4.1.0 > ./package/lib/requirements.txt
 echo "# " >> ./package/lib/requirements.txt
 echo "#   The following list *may* also be required for your modular inputs to work.   " >> ./package/lib/requirements.txt
 echo "#   Uncomment those that are required.   " >> ./package/lib/requirements.txt

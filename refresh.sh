@@ -47,6 +47,6 @@ echo "docker exec -u root splunk /opt/splunk/bin/splunk restart"
 docker exec -u root splunk /opt/splunk/bin/splunk restart
 echo
 echo "Now login to Splunk and check your inputs.    If they don't load use this search"
-echo "     index=_internal sourcetype=splunkd ERROR"
+echo "     index=_internal sourcetype=splunkd ERROR ModularInputs"
 echo
 date
