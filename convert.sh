@@ -88,8 +88,7 @@ echo "# " >> ./package/lib/requirements.txt
 # -------------------------------------------------------------------------------
 # identify any additional imported libraries and add them to the requirements.txt file (exclude from xxx import yyy for now)
 # -------------------------------------------------------------------------------
-#cat ./package/bin/input_module_*.py | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json, re)' | sed -n 's/.*import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
-cat ./package/bin/input_module_*.py | grep import | grep -Ev '(from |import os|import sys|import time|import datetime|import json | import json, re)' | sed -n 's/import /#/p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
+cat ./package/bin/input_module_*.py | grep import | grep -Ev '(from |import os|import sys|import time|import datetime|import json | import json, re)' | sed -n 's/.*import /#/p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
 
 # -------------------------------------------------------------------------------
 #  for any 'import from' statements let's see if the library is included in the TA's /bin directory.    If NOT, let's add it to the requuirements.txt file
@@ -153,7 +152,7 @@ do
     # -------------------------------------------------------------------------------
     #  get all of the import statements for this input that are NOT in our imports.py
     # -------------------------------------------------------------------------------
-    cat ./input_module_$OUTPUT | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json| import json, re)'| sort | uniq >>./tmp_imports.py
+    cat ./input_module_$OUTPUT | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json| import json, re)' | sed 's/^[ \t]*//' | sort | uniq >>./tmp_imports.py
     
 
     # -------------------------------------------------------------------------------
