@@ -80,12 +80,16 @@ fi
 # -------------------------------------------------------------------------------
 mkdir ./package/lib
 echo splunktaucclib==4.0.7 > ./package/lib/requirements.txt
+echo "# " >> ./package/lib/requirements.txt
+echo "#   The following list *may* also be required for your modular inputs to work.   " >> ./package/lib/requirements.txt
+echo "#   Uncomment those that are required.   " >> ./package/lib/requirements.txt
+echo "# " >> ./package/lib/requirements.txt 
 
 # -------------------------------------------------------------------------------
 # identify any additional imported libraries and add them to the requirements.txt file (exclude from xxx import yyy for now)
 # -------------------------------------------------------------------------------
 #cat ./package/bin/input_module_*.py | grep import | grep -Ev '(import os|import sys|import time|import datetime|import json, re)' | sed -n 's/.*import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
-cat ./package/bin/input_module_*.py | grep import | grep -Ev '(from |import os|import sys|import time|import datetime|import json | import json, re)' | sed -n 's/import //p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
+cat ./package/bin/input_module_*.py | grep import | grep -Ev '(from |import os|import sys|import time|import datetime|import json | import json, re)' | sed -n 's/import /#/p' | xargs -L1 | sort | uniq >>./package/lib/requirements.txt
 
 # -------------------------------------------------------------------------------
 #  for any 'import from' statements let's see if the library is included in the TA's /bin directory.    If NOT, let's add it to the requuirements.txt file
@@ -110,11 +114,14 @@ do
     done
     if ! $included ; then
         echo "      Adding $i to requirements.txt"
-        echo "$i" >>../../package/lib/requirements.txt
+        echo "#$i" >>../../package/lib/requirements.txt
     fi
 done
-echo "Finished processing import statements and libraries..."
 
+echo "Need to change base64 to pybase64  & change the python code to import pybase64 as base64 "
+echo "Finished processing import statements and libraries..."
+echo "     check the package\lib\requirements.txt file "
+echo 
 
 
 # -------------------------------------------------------------------------------
