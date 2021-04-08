@@ -243,7 +243,7 @@ rm ./package/bin/input_module_*.py
 rm ./package/bin/${AOB_TA_DIR}_rh*.py 
 
 rm -rf ./package/locale
-rm -rf ./package/default/data
+#rm -rf ./package/default/data     -- may need to remove this when UCC5 hits  (react framework)
 rm -rf ./package/README
 rm -rf ./package/appserver
 rm -rf ./package/bin/${AOB_TA_DIR_lowercase}
