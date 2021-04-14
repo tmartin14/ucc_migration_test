@@ -82,7 +82,7 @@ echo
 # -------------------------------------------------------------------------------
 echo "Creating lib/requirements.txt file"
 mkdir ./package/lib
-echo splunktaucclib==4.1.0 > ./package/lib/requirements.txt
+echo splunktaucclib==4.4.0 > ./package/lib/requirements.txt
 echo "# " >> ./package/lib/requirements.txt
 echo "#   The following list *may* also be required for your modular inputs to work.   " >> ./package/lib/requirements.txt
 echo "#   Uncomment those that are required.   " >> ./package/lib/requirements.txt
@@ -174,7 +174,8 @@ do
     #   4. The old import modinput_wrapper.base_modinput statement
     #   5. The old "Do Not Edit" lines from AOB code generation
     # -------------------------------------------------------------------------------
-    new_input_source=$(echo "$new_input_source" | sed "/^import ${AOB_TA_DIR_lowercase}_declare/d")
+    #new_input_source=$(echo "$new_input_source" | sed "/^import ${AOB_TA_DIR_lowercase}_declare/d")
+    new_input_source=$(echo "$new_input_source" | sed "/^import .*_declare$/d")
     new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^from solnlib.packages.splunklib import modularinput as smi/d')
     new_input_source=$(echo "$new_input_source" | sed '/import modinput_wrapper.base_modinput/d')
@@ -239,22 +240,33 @@ rm ./package/metadata/local.meta 2> /dev/null
 rm ./package/README.txt 2> /dev/null
 rm ./package/bin/*.pyc 2> /dev/null
 rm ./package/bin/__pycache__ 2> /dev/null
-rm ./package/bin/input_module_*.py 
-rm ./package/bin/${AOB_TA_DIR}_rh*.py 
+rm ./package/bin/*_rh*.py 2> /dev/null
+rm ./package/bin/input_module_*.py 2> /dev/null
 
 rm -rf ./package/locale
-#rm -rf ./package/default/data     -- may need to remove this when UCC5 hits  (react framework)
+#rm -rf ./package/default/data     -- may need to re-add this directory removal when UCC5 hits  (react framework)
 rm -rf ./package/README
 rm -rf ./package/appserver
-rm -rf ./package/bin/${AOB_TA_DIR_lowercase}
-rm -rf ./package/bin/${AOB_TA_DIR_lowercase}_declare.py
+rm -rf ./package/bin/*/aob_py*/
+rm -rf ./package/bin/*_declare.py
 
 # Check all *.py files for tab indentation errors
 echo
+got_tabs=$(grep -n '\t' ./package/bin/*.py | wc -l)
+if [ $got_tabs != "0" ] 
+  then
+    echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
+    echo "  If found, these must be fixed before running ucc-gen.  "
+    grep -n '\t' ./package/bin/*.py 
+fi  
 echo
-echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
-echo "  If found, these must be fixed before running ucc-gen.  "
-grep -n '\t' ./package/bin/*.py
+echo
+#  Remind the user to check for required libraries
+echo "Please check the /lib/requirements.txt file for any additional libraries you *may* need to include for your"
+echo "modular inputs to work.  This script collects libraries that may or may not be needed and comments them all."
+echo
+echo "contents of package/lib/requirements.txt:"
+cat ./package/lib/requirements.txt
 echo
 echo
 echo Finished.
