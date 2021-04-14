@@ -82,7 +82,7 @@ echo
 # -------------------------------------------------------------------------------
 echo "Creating lib/requirements.txt file"
 mkdir ./package/lib
-echo splunktaucclib==4.4.0 > ./package/lib/requirements.txt
+echo splunktaucclib==4.1.0 > ./package/lib/requirements.txt
 echo "# " >> ./package/lib/requirements.txt
 echo "#   The following list *may* also be required for your modular inputs to work.   " >> ./package/lib/requirements.txt
 echo "#   Uncomment those that are required.   " >> ./package/lib/requirements.txt
@@ -122,9 +122,14 @@ done
 echo "      Updating base64 to pybase64 in requirements.txt (if it exists)"
 sed -i '' 's/base64/pybase64/g' ../../package/lib/requirements.txt
 echo "Finished processing for requirements.txt"
-echo "     check the package/lib/requirements.txt file "
 echo 
-
+#  Remind the user to check for required libraries
+echo "Please check ./package/lib/requirements.txt file for additional libraries you *may* need to include for your"
+echo "modular inputs to work.  This script collects libraries that may or may not be needed and comments them all in "
+echo "/package/lib/requirements.txt:"
+cat ../../package/lib/requirements.txt
+echo
+echo 
 
 # -------------------------------------------------------------------------------
 #          Now let's start processing the individual inputs
@@ -226,7 +231,16 @@ do
     echo "$new_input_source" > $OUTPUT
     echo Done.   
 done
-
+echo Finished with Modular Inputs
+echo
+echo "Processing Modular Alerts...      This is a work in progress.  Nothing is being done with alert actions yet."
+echo "    add all the imports from modalert_***_helper.py into alertname.py "
+echo "    replace the process_events( function) "
+echo "    change the import declare statement"
+echo "    rehome alert_action_base to be from splunktaucclib"
+echo "    remove import modalert_***_helper.py reference"
+echo Finished with Modular Alerts
+echo
 
 # OK, let's get back to the main directory
 cd ../..
@@ -245,8 +259,8 @@ rm ./package/bin/input_module_*.py 2> /dev/null
 
 rm -rf ./package/locale
 #rm -rf ./package/default/data     -- may need to re-add this directory removal when UCC5 hits  (react framework)
+#rm -rf ./package/appserver     --> removing 4/14 to keep any custom js, images, etc.
 rm -rf ./package/README
-rm -rf ./package/appserver
 rm -rf ./package/bin/*/aob_py*/
 rm -rf ./package/bin/*_declare.py
 
@@ -259,14 +273,6 @@ if [ $got_tabs != "0" ]
     echo "  If found, these must be fixed before running ucc-gen.  "
     grep -n '\t' ./package/bin/*.py 
 fi  
-echo
-echo
-#  Remind the user to check for required libraries
-echo "Please check the /lib/requirements.txt file for any additional libraries you *may* need to include for your"
-echo "modular inputs to work.  This script collects libraries that may or may not be needed and comments them all."
-echo
-echo "contents of package/lib/requirements.txt:"
-cat ./package/lib/requirements.txt
 echo
 echo
 echo Finished.
