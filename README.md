@@ -18,8 +18,7 @@ There may be additional edits required after running these scripts, but the idea
 2. Copy your TA's entire directory into this directory `/ucc-migration_test/Splunk_TA_XXX`
 3. Run the [convert.sh](https://github.com/tmartin14/ucc_migration_test/convert.sh) script from the root directory of this repository passing in the name of the TA’s directory    `./convert.sh Splunk_TA_XXX` 
     Your new source code will now be located in the `/ucc-migration_test/package` directory and is setup to run ucc-gen.
-
-4. Execute `ucc-gen` and the new TA will be written to an `ucc-migration_test/output` directory.
+4. Execute `ucc-gen` command from the /ucc-migration_test directory and the new TA will be written to a `ucc-migration_test/output` directory.
 5. Upload your new TA from `ucc-migration_test/output/Splunk_TA_XXX` into your Splunk server's /etc/apps directory and try it out.
 
 
