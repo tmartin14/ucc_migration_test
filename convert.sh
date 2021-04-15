@@ -80,7 +80,9 @@ echo
 # -------------------------------------------------------------------------------
 # ucc-based TA's will require the splunktaucclib library to be included in the build.  Add it here.
 # -------------------------------------------------------------------------------
-echo "Creating lib/requirements.txt file"
+echo " -------------------------------------------"
+echo "     Creating lib/requirements.txt file"
+echo " -------------------------------------------"
 mkdir ./package/lib
 echo splunktaucclib==4.1.0 > ./package/lib/requirements.txt
 echo "# " >> ./package/lib/requirements.txt
@@ -121,7 +123,6 @@ do
 done
 echo "      Updating base64 to pybase64 in requirements.txt (if it exists)"
 sed -i '' 's/base64/pybase64/g' ../../package/lib/requirements.txt
-echo "Finished processing for requirements.txt"
 echo 
 #  Remind the user to check for required libraries
 echo "Please check ./package/lib/requirements.txt file for additional libraries you *may* need to include for your"
@@ -129,13 +130,51 @@ echo "modular inputs to work.  This script collects libraries that may or may no
 echo "/package/lib/requirements.txt:"
 cat ../../package/lib/requirements.txt
 echo
-echo 
+echo "Finished processing for requirements.txt"
+echo
+
 
 # -------------------------------------------------------------------------------
-#          Now let's start processing the individual inputs
+#          Now let's start processing any alert actions
+# -------------------------------------------------------------------------------
+echo " ---------------------------------------"
+echo "     Processing Alert Actions..."
+echo " ---------------------------------------"
+for MODALERT in $(ls ./*/modalert_*_helper.py | xargs -L1 | awk -v FS="(modalert_|_helper.py)" '{print $2}')
+do
+    echo Processing alert action named:   $MODALERT
+    # What do we need to do?
+      # Copy the imports from the modalert_<name>_helper.py inot the <name>.py source code
+      #    Remove duplicate import statements  (lines 1-4 of <name>.py)
+      #    Change the import *_declare to import_declare_test
+      # Remove the original process_event() function 
+      # Copy the process_event() function from modalert_<name>_helper.py into the <name>.py source code  (and indent it)
+      # Remove the import modalert_<name>_helper statement
+      # Change the package name for alert_action_base to splunktaucclib.alert_action_base
+      # Remove the helper directory     (dirs=(/testfolder/*/))
+    IMPORTS=$(cat ./*/modalert_${MODALERT}_helper.py | sed -n '1,/def process_event(/p' | sed 's/import .*_declare/import import_declare_test/' | sed '$D' )
+    PROCESS_EVENTS=$(cat ./*/modalert_${MODALERT}_helper.py |  sed -n '/def process_event(/,//p' | sed 's/^/    /' )
+    alert_action=$(cat ${MODALERT}.py | sed '1,4d' | sed -e '/    def process_event(/,/if __name__ == "__main__"/{//!d;}')
+    alert_action=${alert_action/    def process_event(self, *args, **kwargs)/"$PROCESS_EVENTS"}
+    alert_action=$(echo "$alert_action" | sed '/import modalert_.*_helper/d')
+    alert_action=$(echo "$alert_action" | sed 's/from alert_actions_base import ModularAlertBase/from splunktaucclib.alert_actions_base import ModularAlertBase/')
+
+    echo "$alert_action" > $MODALERT.py
+    echo Done.   
+
+done
+echo Finished with Alert Actions
+
+
+
+
+# -------------------------------------------------------------------------------
+#          Now let's start processing any modular inputs
 # -------------------------------------------------------------------------------
 echo
-echo "Processing Modular Inputs..."
+echo " ---------------------------------------"
+echo "     Processing Modular Inputs..."
+echo " ---------------------------------------"
 # -------------------------------------------------------------------------------
 #    Remove any py files for any REST input that have an accompanying .cc.json file   -- ucc-gen will recreate the python file for us
 # -------------------------------------------------------------------------------
@@ -233,20 +272,14 @@ do
 done
 echo Finished with Modular Inputs
 echo
-echo "Processing Modular Alerts...      This is a work in progress.  Nothing is being done with alert actions yet."
-echo "    add all the imports from modalert_***_helper.py into alertname.py "
-echo "    replace the process_events( function) "
-echo "    change the import declare statement"
-echo "    rehome alert_action_base to be from splunktaucclib"
-echo "    remove import modalert_***_helper.py reference"
-echo Finished with Modular Alerts
-echo
 
 # OK, let's get back to the main directory
 cd ../..
 
 echo
-echo Cleaning Up... Removing files that are no longer needed
+echo " ----------------------------------------------------------------"
+echo "     Cleaning Up... Removing files that are no longer needed "
+echo " ----------------------------------------------------------------"
 # remove AOB files and other things that will be automatically recreated with ucc-gen
 rm ./package/default/addon_builder.conf 
 rm ./package/default/*_settings.conf
@@ -258,11 +291,17 @@ rm ./package/bin/*_rh*.py 2> /dev/null
 rm ./package/bin/input_module_*.py 2> /dev/null
 
 rm -rf ./package/locale
-#rm -rf ./package/default/data     -- may need to re-add this directory removal when UCC5 hits  (react framework)
-#rm -rf ./package/appserver     --> removing 4/14 to keep any custom js, images, etc.
 rm -rf ./package/README
 rm -rf ./package/bin/*/aob_py*/
 rm -rf ./package/bin/*_declare.py
+rm ./package/bin/*/modalert_*_helper.py 2> /dev/null
+rm ./package/bin/*/alert_actions_base.py 2> /dev/null
+rm ./package/bin/*/cim_actions.py 2> /dev/null
+rm ./package/bin/*/logging_helper.py 2> /dev/null
+#rm -rf ./package/default/data     --> may need to re-add this directory removal when UCC5 hits  (react framework)
+#rm -rf ./package/appserver        --> removing 4/14 to keep any custom js, images, etc.
+find ./package/bin/ -empty -type d -delete     # remove any empty directories from /bin
+echo Done. 
 
 # Check all *.py files for tab indentation errors
 echo
@@ -273,7 +312,6 @@ if [ $got_tabs != "0" ]
     echo "  If found, these must be fixed before running ucc-gen.  "
     grep -n '\t' ./package/bin/*.py 
 fi  
-echo
 echo
 echo Finished.
 echo 
