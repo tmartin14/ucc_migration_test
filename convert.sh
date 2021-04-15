@@ -143,22 +143,33 @@ echo " ---------------------------------------"
 for MODALERT in $(ls ./*/modalert_*_helper.py | xargs -L1 | awk -v FS="(modalert_|_helper.py)" '{print $2}')
 do
     echo Processing alert action named:   $MODALERT
+    # -------------------------------------------------------------------------------
     # What do we need to do?
       # Copy the imports from the modalert_<name>_helper.py inot the <name>.py source code
-      #    Remove duplicate import statements  (lines 1-4 of <name>.py)
       #    Change the import *_declare to import_declare_test
+      #    Remove duplicate import statements  (lines 1-4 of <name>.py)
       # Remove the original process_event() function 
       # Copy the process_event() function from modalert_<name>_helper.py into the <name>.py source code  (and indent it)
       # Remove the import modalert_<name>_helper statement
       # Change the package name for alert_action_base to splunktaucclib.alert_action_base
       # Remove the helper directory     (dirs=(/testfolder/*/))
-    IMPORTS=$(cat ./*/modalert_${MODALERT}_helper.py | sed -n '1,/def process_event(/p' | sed 's/import .*_declare/import import_declare_test/' | sed '$D' )
+    # -------------------------------------------------------------------------------
+    # Create variables to concatenate later
+    IMPORT_STATIC="import import_declare_test"
+    IMPORTS=$(cat ./*/modalert_${MODALERT}_helper.py | sed -n '1,/def process_event(/p' | sed '/import .*_declare/d' | sed '/# encoding = utf-8/d' | sed '$D' )
     PROCESS_EVENTS=$(cat ./*/modalert_${MODALERT}_helper.py |  sed -n '/def process_event(/,//p' | sed 's/^/    /' )
-    alert_action=$(cat ${MODALERT}.py | sed '1,4d' | sed -e '/    def process_event(/,/if __name__ == "__main__"/{//!d;}')
-    alert_action=${alert_action/    def process_event(self, *args, **kwargs):/"$PROCESS_EVENTS"}
-    alert_action=$(echo "$alert_action" | sed '/import modalert_.*_helper/d')
-    alert_action=$(echo "$alert_action" | sed 's/from alert_actions_base import ModularAlertBase/from splunktaucclib.alert_actions_base import ModularAlertBase/')
 
+    # read in the old alert action file and remove the process_event function cocde
+    alert_action=$(cat ${MODALERT}.py | sed '1,4d' | sed -e '/    def process_event(/,/if __name__ == "__main__"/{//!d;}')
+    # concatenate the imports with the alert_action source
+    alert_action="$IMPORT_STATIC"$'\n'"$IMPORTS"$'\n'"$alert_action"
+    # add the process_events function
+    alert_action=${alert_action/    def process_event(self, *args, **kwargs):/"$PROCESS_EVENTS"}
+    # remove the reference to modalert_..._helper
+    alert_action=$(echo "$alert_action" | sed '/import modalert_.*_helper/d')
+    # change the pathing for alert_actions_base
+    alert_action=$(echo "$alert_action" | sed 's/from alert_actions_base import ModularAlertBase/from splunktaucclib.alert_actions_base import ModularAlertBase/')
+    # write out the new alert action file
     echo "$alert_action" > $MODALERT.py
     echo Done.   
 
