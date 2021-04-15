@@ -155,7 +155,7 @@ do
     IMPORTS=$(cat ./*/modalert_${MODALERT}_helper.py | sed -n '1,/def process_event(/p' | sed 's/import .*_declare/import import_declare_test/' | sed '$D' )
     PROCESS_EVENTS=$(cat ./*/modalert_${MODALERT}_helper.py |  sed -n '/def process_event(/,//p' | sed 's/^/    /' )
     alert_action=$(cat ${MODALERT}.py | sed '1,4d' | sed -e '/    def process_event(/,/if __name__ == "__main__"/{//!d;}')
-    alert_action=${alert_action/    def process_event(self, *args, **kwargs)/"$PROCESS_EVENTS"}
+    alert_action=${alert_action/    def process_event(self, *args, **kwargs):/"$PROCESS_EVENTS"}
     alert_action=$(echo "$alert_action" | sed '/import modalert_.*_helper/d')
     alert_action=$(echo "$alert_action" | sed 's/from alert_actions_base import ModularAlertBase/from splunktaucclib.alert_actions_base import ModularAlertBase/')
 
