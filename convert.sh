@@ -84,7 +84,7 @@ echo " -------------------------------------------"
 echo "     Creating lib/requirements.txt file"
 echo " -------------------------------------------"
 mkdir ./package/lib
-echo splunktaucclib==4.1.0 > ./package/lib/requirements.txt
+echo "splunktaucclib>=4.1.0" > ./package/lib/requirements.txt
 echo "# " >> ./package/lib/requirements.txt
 echo "#   The following list *may* also be required for your modular inputs to work.   " >> ./package/lib/requirements.txt
 echo "#   Uncomment those that are required.   " >> ./package/lib/requirements.txt
