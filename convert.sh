@@ -269,8 +269,10 @@ do
     #echo "$VALIDATION"
    
     # now we need to replace the AOB helper call with the actual validation logic from above and remove the original lines
-    new_input_source=${new_input_source/        input_module.validate_input(self, definition)/"$VALIDATION"}
-    new_input_source=$(echo "$new_input_source" | sed '/    def validate_input(self, definition):/d' | sed '/    """validate the input stanza"""/d')
+    #######new_input_source=${new_input_source/        input_module.validate_input(self, definition)/"$VALIDATION"}     <--  REMOVED for 10x performance improvement
+    new_input_source=$(echo "$new_input_source" | sed '/        input_module.validate_input(self, definition)/r'<(echo "$VALIDATION"))
+    # remove the old function call & comment
+    new_input_source=$(echo "$new_input_source" | sed '/    def validate_input(self, definition):/d' | sed '/    """validate the input stanza"""/d' | sed '/        input_module.validate_input(self, definition)/d' )
     #echo "$new_input_source"
 
     # -------------------------------------------------------------------------------
@@ -280,9 +282,10 @@ do
     #echo COLLECT_EVENTS="$COLLECT_EVENTS" 
 
     # replace the original collect_events with the actual collect_events logic from the input_module_$OUTPUT file
-    new_input_source=${new_input_source/        input_module.collect_events(self, ew)/"$COLLECT_EVENTS"}
+    #######new_input_source=${new_input_source/        input_module.collect_events(self, ew)/"$COLLECT_EVENTS"}     <--  REMOVED for 10x performance improvement
+    new_input_source=$(echo "$new_input_source" | sed '/        input_module.collect_events(self, ew)/r'<(echo "$COLLECT_EVENTS"))
     # remove the old function call & comment
-    new_input_source=$(echo "$new_input_source" | sed '/^    def collect_events(self, ew):/d' | sed '/^        """write out the events"""/d')
+    new_input_source=$(echo "$new_input_source" | sed '/^    def collect_events(self, ew):/d' | sed '/^        """write out the events"""/d' | sed '/        input_module.collect_events(self, ew)/d' )
     #echo "$new_input_source"
 
 
