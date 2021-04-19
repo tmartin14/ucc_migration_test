@@ -282,8 +282,7 @@ do
     # replace the original collect_events with the actual collect_events logic from the input_module_$OUTPUT file
     new_input_source=${new_input_source/        input_module.collect_events(self, ew)/"$COLLECT_EVENTS"}
     # remove the old function call & comment
-    new_input_source=$(echo "$new_input_source" | sed '/^    def collect_events(self, ew):/d')
-    new_input_source=$(echo "$new_input_source" | sed '/^        """write out the events"""/d')
+    new_input_source=$(echo "$new_input_source" | sed '/^    def collect_events(self, ew):/d' | sed '/^        """write out the events"""/d')
     #echo "$new_input_source"
 
 
