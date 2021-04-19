@@ -249,7 +249,6 @@ do
     #   4. The old import modinput_wrapper.base_modinput statement
     #   5. The old "Do Not Edit" lines from AOB code generation
     # -------------------------------------------------------------------------------
-    #new_input_source=$(echo "$new_input_source" | sed "/^import ${AOB_TA_DIR_lowercase}_declare/d")
     new_input_source=$(echo "$new_input_source" | sed "/^import .*_declare$/d")
     new_input_source=$(echo "$new_input_source" | sed '/^import input_module_/d')
     new_input_source=$(echo "$new_input_source" | sed '/^from solnlib.packages.splunklib import modularinput as smi/d')
@@ -282,13 +281,12 @@ do
     # -------------------------------------------------------------------------------
     #   get the collect_events code from the input_module_XXX file and insert it here
     # -------------------------------------------------------------------------------
-#   COLLECT_EVENTS=$(sed -n '/^def collect_events(helper, ew):/,/^def /{ /^def collect_events(helper/p; /(^def |$)/d; p;}' input_module_$OUTPUT  | sed 's/def collect_events(helper, definition):/def collect_events(self, definition):/g' | sed 's/\(.*\)/    \1/')
     COLLECT_EVENTS=$(sed -n '/^def collect_events(helper, ew):/,/^def /{ /^def collect_events(/p; /(^def |$)/d; p;}' input_module_$OUTPUT | sed 's/\(.*\)/    \1/' | sed '1d')
     #echo COLLECT_EVENTS="$COLLECT_EVENTS" 
 
-    # now we need to replace the original call from to the 2nd file with the actual collect_events logic from above
+    # replace the original collect_events with the actual collect_events logic from the input_module_$OUTPUT file
     new_input_source=${new_input_source/        input_module.collect_events(self, ew)/"$COLLECT_EVENTS"}
-    # and remove the old function call & comment
+    # remove the old function call & comment
     new_input_source=$(echo "$new_input_source" | sed '/^    def collect_events(self, ew):/d')
     new_input_source=$(echo "$new_input_source" | sed '/^        """write out the events"""/d')
     #echo "$new_input_source"
@@ -307,6 +305,14 @@ echo
 # OK, let's get back to the main directory
 cd ../..
 
+# create or update the README.txt file if it exists(required to pass appInspect)
+if [ -f  ./package/README.txt]; then
+    sed -i '' 's/This is an add-on powered by the Splunk Add-on Builder./This is an add-on powered by the Splunk Universal Configuration Console (UCC)./g' ./package/README.txt
+else
+   echo "This is an add-on powered by the Splunk Universal Configuration Console (UCC)." > ./package/README.txt
+fi
+
+
 echo
 echo " ----------------------------------------------------------------"
 echo "     Cleaning Up... Removing files that are no longer needed "
@@ -315,7 +321,6 @@ echo " ----------------------------------------------------------------"
 rm ./package/default/addon_builder.conf 
 rm ./package/default/*_settings.conf
 rm ./package/metadata/local.meta 2> /dev/null
-rm ./package/README.txt 2> /dev/null
 rm ./package/bin/*.pyc 2> /dev/null
 rm ./package/bin/__pycache__ 2> /dev/null
 rm ./package/bin/*_rh*.py 2> /dev/null
@@ -330,7 +335,6 @@ rm ./package/bin/*/alert_actions_base.py 2> /dev/null
 rm ./package/bin/*/cim_actions.py 2> /dev/null
 rm ./package/bin/*/logging_helper.py 2> /dev/null
 #rm -rf ./package/default/data     --> may need to re-add this directory removal when UCC5 hits  (react framework)
-#rm -rf ./package/appserver        --> removing 4/14 to keep any custom js, images, etc.
 find ./package/bin/ -empty -type d -delete     # remove any empty directories from /bin
 echo Done. 
 
