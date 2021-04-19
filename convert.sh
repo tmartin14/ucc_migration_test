@@ -120,8 +120,12 @@ do
         echo "#$i" >>../../package/lib/requirements.txt
     fi
 done
-echo "      Updating base64 to pybase64 in requirements.txt (if it exists)"
-sed -i '' 's/base64/pybase64/g' ../../package/lib/requirements.txt
+
+if  grep -qinE base64 ../../package/lib/requirements.txt  ; then 
+    echo "      Updating base64 to pybase64 in requirements.txt"
+    sed -i '' 's/base64/pybase64/g' ../../package/lib/requirements.txt
+    echo 
+fi
 echo 
 #  Remind the user to check for required libraries
 echo "Please check ./package/lib/requirements.txt file for additional libraries you *may* need to include for your"
