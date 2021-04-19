@@ -1,11 +1,6 @@
 #! /bin/bash
 #    usage:    ./convert.sh TA_directory 
 
-# Splunk_TA_New_Relic was used as the example source code for this project
-
-# TODO:
-#   add alert actions script modifications
-
 
 # -------------------------------------------------------------------------------
 #   Check input arguments and see if we're setup correctly
@@ -306,7 +301,7 @@ echo
 cd ../..
 
 # create or update the README.txt file if it exists(required to pass appInspect)
-if [ -f  ./package/README.txt]; then
+if [ -f  ./package/README.txt ]; then
     sed -i '' 's/This is an add-on powered by the Splunk Add-on Builder./This is an add-on powered by the Splunk Universal Configuration Console (UCC)./g' ./package/README.txt
 else
    echo "This is an add-on powered by the Splunk Universal Configuration Console (UCC)." > ./package/README.txt
