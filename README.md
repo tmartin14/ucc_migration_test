@@ -20,7 +20,7 @@ There may be additional edits required after running these scripts, but the idea
     Your new source code will now be located in the `/ucc-migration_test/package` directory and is setup to run ucc-gen.
 4. Execute `ucc-gen` command from the `/ucc-migration_test` directory and the new TA will be written to a `ucc-migration_test/output` directory.
 5. Upload your new TA from `ucc-migration_test/output/Splunk_TA_XXX` into your Splunk server's /etc/apps directory and try it out.
-6. When you're ready, Package your app using the [package_app.sh](./package-app.sh)
+6. When you're ready, Package your app using the [package_app.sh](./package_app.sh)
 7. Submit your app to Splunk's appInspect or validation and Splunk Cloud vetting process using [the script in this repo](https://github.com/tmartin14/splunk-appInspect-helper)
 
 
