@@ -18,7 +18,8 @@ if [ ! -d "$AOB_TA_DIR" ]
 then
     echo
     echo "Directory /$AOB_TA_DIR DOES NOT exists." 
-    echo "   Usage:    ./convert.sh TA_Directory"
+    echo 
+    echo "   Usage: ${0} <TA_Directory>"
     echo
     exit 9999 # die with error code 9999
 fi
@@ -74,7 +75,17 @@ else
 fi
 echo 
 
+# -------------------------------------------------------------------------------
+#  update the middle version number and remove reference to AOB in the app.conf file  (version=x.y.z)
+# -------------------------------------------------------------------------------
+# delete the reference to this being an AOB-TA
+sed '/^# this add-on is powered by splunk Add-on builder/d' ./package/default/app.conf
+awk '/version = /{split($NF,v,/[.]/); $NF=v[1]"."++v[2]"."v[3]}1' ./package/default/app.conf > tmp && mv tmp ./package/default/app.conf
 
+# -------------------------------------------------------------------------------
+#  update the middle version number in globalConfig.json      ("version" : "x.y.z")
+# -------------------------------------------------------------------------------
+awk -F'["]' -v OFS='"'  '/"version":/{split($4,a,".");$4=a[1]"."a[2]+1"."a[3]};1' ./globalConfig.json > tmp && mv tmp ./globalConfig.json
 
 # -------------------------------------------------------------------------------
 # ucc-based TA's will require the splunktaucclib library to be included in the build.  Add it here.
