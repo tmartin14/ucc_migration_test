@@ -75,17 +75,11 @@ else
 fi
 echo 
 
-# -------------------------------------------------------------------------------
-#  update the middle version number and remove reference to AOB in the app.conf file  (version=x.y.z)
-# -------------------------------------------------------------------------------
-# delete the reference to this being an AOB-TA
-sed '/^# this add-on is powered by splunk Add-on builder/d' ./package/default/app.conf
-awk '/version = /{split($NF,v,/[.]/); $NF=v[1]"."++v[2]"."v[3]}1' ./package/default/app.conf > tmp && mv tmp ./package/default/app.conf
+# delete the reference to this being an AOB-TA in the app.conf file
+sed -n '/^# this add-on is powered by splunk Add-on builder/d' ./package/default/app.conf
+# delete the ./package/appserver/static/js/build/globalConfig.json file.   It will be rebuilt in ucc-gen (with correct versioning)
+rm ./package/appserver/static/js/build/globalConfig.json
 
-# -------------------------------------------------------------------------------
-#  update the middle version number in globalConfig.json      ("version" : "x.y.z")
-# -------------------------------------------------------------------------------
-awk -F'["]' -v OFS='"'  '/"version":/{split($4,a,".");$4=a[1]"."a[2]+1"."a[3]};1' ./globalConfig.json > tmp && mv tmp ./globalConfig.json
 
 # -------------------------------------------------------------------------------
 # ucc-based TA's will require the splunktaucclib library to be included in the build.  Add it here.
@@ -144,8 +138,6 @@ echo "modular inputs to work.  This script collects libraries that may or may no
 echo "/package/lib/requirements.txt:"
 cat ../../package/lib/requirements.txt
 echo
-echo "Finished processing for requirements.txt"
-echo
 
 
 
@@ -157,7 +149,7 @@ echo
 echo " ---------------------------------------"
 echo "     Processing Alert Actions..."
 echo " ---------------------------------------"
-for MODALERT in $(ls ./*/modalert_*_helper.py | xargs -L1 | awk -v FS="(modalert_|_helper.py)" '{print $2}')
+for MODALERT in $(ls ./*/modalert_*_helper.py 2>/dev/null | xargs -L1 | awk -v FS="(modalert_|_helper.py)" '{print $2}')
 do
     echo Processing alert action named:   $MODALERT
     # -------------------------------------------------------------------------------
@@ -360,6 +352,54 @@ if [ $got_tabs != "0" ]
     grep -n '\t' ./package/bin/*.py 
 fi  
 echo
-echo Finished.
+CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^:]*$' | sed 's/,$//;s/"//g'`
+NEXT_VERSION=`echo $CURR_VERSION | awk -F. -v OFS=. '{$2++;print}'`
+echo "-----------------------------------------------------------------------"
+echo "                      VERSIONING NOTE                                  "
+echo "-----------------------------------------------------------------------"
+echo "  When running ucc-gen to generate your new TA, ucc-gen will attempt   "
+echo "  to create a version number from the 'tag' in the github repo.        "
 echo 
+echo " If you prefer to explicitly set the version, please use this flag     "
+echo " when running ucc-gen: "
+echo "       ucc-gen --ta-version $NEXT_VERSION"
 echo
+echo "   The current version of your TA is:       $CURR_VERSION"
+echo "   Recommended version for this update is:   $NEXT_VERSION"
+echo "-----------------------------------------------------------------------"
+echo
+echo Finished.
+echo
+echo
+
+
+#-----------------------------------------------------
+#              Shall we run ucc-gen?
+#-----------------------------------------------------
+while true; do
+    read -p "Would you like to run ucc-gen --ta-version $NEXT_VERSION now? " yn
+    case $yn in
+        [Yy]* ) ucc-gen --ta-version "$NEXT_VERSION"; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer y(es) or n(o).";;
+    esac
+done
+echo
+echo
+
+
+#-----------------------------------------------------
+#         Shall we package the app?
+#-----------------------------------------------------
+while true; do
+    read -p "Would you like to pakcage this app now? " yn
+    case $yn in
+        [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -cvzf ./${AOB_TA_DIR}.tgz ./${AOB_TA_DIR}; cd ../; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer y(es) or n(o).";;
+    esac
+done
+echo
+echo "Your new UCC_based app can be found here: ./output/${AOB_TA_DIR}.tgz"
+echo
+

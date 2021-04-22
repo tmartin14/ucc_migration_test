@@ -27,13 +27,6 @@ fi
 AOB_TA_DIR=${AOB_TA_DIR%/}
 
 pwd
-echo =========  Removing output directory  ========
-rm -rf output/
-echo ========== Running ucc-gen   ===========
-ucc-gen
-echo
-echo "ucc-gen complete."
-echo
 echo
 echo
 echo ========== Delete the old TA from the container  ===========

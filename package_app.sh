@@ -26,4 +26,6 @@ fi
 #remove any traiing / from the dir name
 AOB_TA_DIR=${AOB_TA_DIR%/}
 
-COPYFILE_DISABLE=1 tar -cvzf ./output/${AOB_TA_DIR}.tgz ./output/${AOB_TA_DIR}
+cd ./output
+COPYFILE_DISABLE=1 tar -cvzf ./${AOB_TA_DIR}.tgz ./${AOB_TA_DIR}
+cd ../
