@@ -392,7 +392,7 @@ echo
 #         Shall we package the app?
 #-----------------------------------------------------
 while true; do
-    read -p "Would you like to pakcage this app now? " yn
+    read -p "Would you like to package this app now? " yn
     case $yn in
         [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}.tgz ./${AOB_TA_DIR}; cd ../; break;;
         [Nn]* ) exit;;
@@ -401,5 +401,19 @@ while true; do
 done
 echo
 echo "Your new UCC_based app can be found here: ./output/${AOB_TA_DIR}.tgz"
+echo
+
+
+#-----------------------------------------------------
+#         Shall we appInspect?
+#-----------------------------------------------------
+while true; do
+    read -p "Would you like to submit this app for appInspect now? " yn
+    case $yn in
+        [Yy]* ) ./submit_appInspect.sh ./output/${AOB_TA_DIR}.tgz; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer y(es) or n(o).";;
+    esac
+done
 echo
 
