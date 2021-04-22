@@ -394,7 +394,7 @@ echo
 while true; do
     read -p "Would you like to pakcage this app now? " yn
     case $yn in
-        [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -cvzf ./${AOB_TA_DIR}.tgz ./${AOB_TA_DIR}; cd ../; break;;
+        [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}.tgz ./${AOB_TA_DIR}; cd ../; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer y(es) or n(o).";;
     esac
