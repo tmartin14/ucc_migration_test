@@ -78,7 +78,10 @@ echo
 # delete the reference to this being an AOB-TA in the app.conf file
 sed -n '/^# this add-on is powered by splunk Add-on builder/d' ./package/default/app.conf
 # delete the ./package/appserver/static/js/build/globalConfig.json file.   It will be rebuilt in ucc-gen (with correct versioning)
-rm ./package/appserver/static/js/build/globalConfig.json
+#rm ./package/appserver/static/js/build/globalConfig.json
+# copy the new globalConfig.json into ./package/appserver/static/js/build/
+#cp ./globalConfig.json ./package/appserver/static/js/build/globalConfig.json
+
 
 
 # -------------------------------------------------------------------------------
@@ -331,9 +334,9 @@ rm ./package/bin/*_rh*.py 2> /dev/null
 rm ./package/bin/input_module_*.py 2> /dev/null
 
 rm -rf ./package/locale
-rm -rf ./package/README
 rm -rf ./package/bin/*/aob_py*/
 rm -rf ./package/bin/*_declare.py
+rm ./package/README/addon_builder.conf.spec
 rm ./package/bin/*/modalert_*_helper.py 2> /dev/null
 rm ./package/bin/*/alert_actions_base.py 2> /dev/null
 rm ./package/bin/*/cim_actions.py 2> /dev/null
@@ -352,8 +355,13 @@ if [ $got_tabs != "0" ]
     grep -n '\t' ./package/bin/*.py 
 fi  
 echo
-CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^:]*$' | sed 's/,$//;s/"//g'`
+CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'`
 NEXT_VERSION=`echo $CURR_VERSION | awk -F. -v OFS=. '{$2++;print}'`
+
+#update globalConfig.json with the next version & copy it to ./package/appserver/static/js/build/
+sed  -i '' "s/\"version\": \"${CURR_VERSION}\"/\"version\": \"${NEXT_VERSION}\"/" ./globalConfig.json
+cp ./globalConfig.json ./package/appserver/static/js/build/globalConfig.json
+
 echo "-----------------------------------------------------------------------"
 echo "                      VERSIONING NOTE                                  "
 echo "-----------------------------------------------------------------------"
@@ -365,7 +373,7 @@ echo " when running ucc-gen: "
 echo "       ucc-gen --ta-version $NEXT_VERSION"
 echo
 echo "   The current version of your TA is:       $CURR_VERSION"
-echo "   Recommended version for this update is:   $NEXT_VERSION"
+echo "   Recommended version for this update is:  $NEXT_VERSION"
 echo "-----------------------------------------------------------------------"
 echo
 echo Finished.
