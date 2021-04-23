@@ -51,7 +51,7 @@ main() {
      # submit the application for appInspect
      # ----------------------------------------------------
      log "Submitting AppInspect request with Splunk Cloud compliance..."
-     RESPONSE=`curl -s -X POST  --connect-timeout 20 --max-time 120 \
+     RESPONSE=`curl -s -X POST  --connect-timeout 20 --max-time 120 --retry 5 \
           -H "Authorization: bearer $TOKEN" \
           -H "Cache-Control: no-cache" \
           -F "app_package=@\"$APP_FILE_PATH\"" \
