@@ -385,6 +385,7 @@ echo
 #              Shall we run ucc-gen?
 #-----------------------------------------------------
 while true; do
+    echo "Reminder:  If you need to uncomment entries in pakcage/lib/requirements.txt, do NOT run ucc-gen at this point.\nUncommnet what you need and then run ucc-gen."
     read -p "Would you like to run ucc-gen --ta-version $NEXT_VERSION now? " yn
     case $yn in
         [Yy]* ) ucc-gen --ta-version "$NEXT_VERSION"; break;;
