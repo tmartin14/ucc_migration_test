@@ -345,15 +345,6 @@ rm ./package/bin/*/logging_helper.py 2> /dev/null
 find ./package/bin/ -empty -type d -delete     # remove any empty directories from /bin
 echo Done. 
 
-# Check all *.py files for tab indentation errors
-echo
-got_tabs=$(grep -n '\t' ./package/bin/*.py | wc -l)
-if [ $got_tabs != "0" ] 
-  then
-    echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
-    echo "  If found, these must be fixed before running ucc-gen.  "
-    grep -n '\t' ./package/bin/*.py 
-fi  
 echo
 CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'`
 NEXT_VERSION=`echo $CURR_VERSION | awk -F. -v OFS=. '{$2++;print}'`
@@ -378,8 +369,20 @@ echo "-----------------------------------------------------------------------"
 echo
 echo Finished.
 echo
-echo
 
+#-----------------------------------------------------
+# Check all *.py files for tab indentation errors
+#-----------------------------------------------------
+got_tabs=$(grep -n '\t' ./package/bin/*.py | wc -l)
+if [ $got_tabs != "0" ] 
+  then
+    echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
+    echo "  If found, these must be fixed before running ucc-gen.  Exiting now"
+    grep -n '\t' ./package/bin/*.py 
+    exit
+fi  
+echo
+echo
 
 #-----------------------------------------------------
 #              Shall we run ucc-gen?
