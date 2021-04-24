@@ -49,7 +49,7 @@ fi
 echo Creating a new ./package directory 
 echo 
 mkdir package
-cp -r ./$AOB_TA_DIR/ ./package
+cp -r ./$AOB_TA_DIR/* ./package
 
 
 
