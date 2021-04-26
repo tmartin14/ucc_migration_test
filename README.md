@@ -1,4 +1,4 @@
-#  STOP - This project has been put on hold pending an upcoming update to Splunk's Add-On Builder project.   This project will generate new versions of older TAs and this project should wait until that project completes in late June or earlly July 2021.
+#  STOP - This project has been put on hold pending an upcoming update to Splunk's Add-On Builder project.   The AOB project will generate new versions of existing AOB TAs and this project should wait until that project completes in late June or early July 2021.
 ____
 
 
