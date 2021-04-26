@@ -1,3 +1,7 @@
+#  STOP - This project has been put on hold pending an upcoming update to Splunk's Add-On Builder project.   This project will generate new versions of older TAs and this project should wait until that project completes in late June or earlly July 2021.
+____
+
+
 # ucc Migration Test
 
 This file contains source for a Unix shell script to perform a migration of modular inputs from a Splunk Add-On Builder(AOB) generated souce base into a new Splunk UCC-based Add-On (a.k.a. TA).  
