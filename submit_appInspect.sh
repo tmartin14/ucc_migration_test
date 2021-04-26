@@ -37,6 +37,7 @@ main() {
      echo
      AUTH_TOKEN=$(echo -n "$SPLUNKBASE_USER:$SPLUNKBASE_PASSWORD" | base64)
 
+     log "Authenticating..."
      RESPONSE=`curl -s -X GET --header "Authorization: Basic $AUTH_TOKEN"  --url "https://api.splunk.com/2.0/rest/login/splunk" `
      STATUS_CODE=`echo $RESPONSE | jq -r '.status_code'`
      if [ $STATUS_CODE -ne 200 ]; then 
@@ -51,7 +52,7 @@ main() {
      # submit the application for appInspect
      # ----------------------------------------------------
      log "Submitting AppInspect request with Splunk Cloud compliance..."
-     RESPONSE=`curl -s -X POST  --connect-timeout 20 --max-time 120 \
+     RESPONSE=`curl -s -X POST  --connect-timeout 10 --max-time 30 \
           -H "Authorization: bearer $TOKEN" \
           -H "Cache-Control: no-cache" \
           -F "app_package=@\"$APP_FILE_PATH\"" \
@@ -81,7 +82,7 @@ main() {
      # get the report results  
      get_results "$REQUEST_ID" "appInspect_results.html"
      echo 
-     log "Done."
+     log "Your appInspect report can be found in appInspect_results.html"
      echo
 }
 

@@ -198,7 +198,8 @@ echo " ---------------------------------------"
 # -------------------------------------------------------------------------------
 for REST_API_INPUT in $(ls *.cc.json | sed -e 's/\.cc.json$//' 2> /dev/null)
 do
-    rm "$REST_API_INPUT".py 
+    rm "input_module_$REST_API_INPUT".py 2> /dev/null
+    rm "$REST_API_INPUT".py 2> /dev/null
 done
 
 for OUTPUT in $(ls input_module_*.py | xargs -L1 | awk -F"input_module_" '{print $2}')
@@ -438,7 +439,7 @@ while true; do
     esac
 done
 echo
-echo "Your new UCC_based app can be found here: ./output/${AOB_TA_DIR}_${NEXT_VERSION}..tgz"
+echo "Your new UCC_based app can be found here: ./output/${AOB_TA_DIR}_${NEXT_VERSION}.tgz"
 echo
 
 
