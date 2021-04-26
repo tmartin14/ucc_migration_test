@@ -77,11 +77,6 @@ echo
 
 # delete the reference to this being an AOB-TA in the app.conf file
 sed -n '/^# this add-on is powered by splunk Add-on builder/d' ./package/default/app.conf
-# delete the ./package/appserver/static/js/build/globalConfig.json file.   It will be rebuilt in ucc-gen (with correct versioning)
-#rm ./package/appserver/static/js/build/globalConfig.json
-# copy the new globalConfig.json into ./package/appserver/static/js/build/
-#cp ./globalConfig.json ./package/appserver/static/js/build/globalConfig.json
-
 
 
 # -------------------------------------------------------------------------------
@@ -345,13 +340,41 @@ rm ./package/bin/*/logging_helper.py 2> /dev/null
 find ./package/bin/ -empty -type d -delete     # remove any empty directories from /bin
 echo Done. 
 
+# -------------------------------------------------------------------------------
+#     Now let's check the versioning and update the version number
+# -------------------------------------------------------------------------------
 echo
 CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'`
 NEXT_VERSION=`echo $CURR_VERSION | awk -F. -v OFS=. '{$2++;print}'`
 
-#update globalConfig.json with the next version & copy it to ./package/appserver/static/js/build/
+APP_CONF_VER=`grep '^version' ./package/default/app.conf | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'` 
+APP_MANIFEST_VER=`grep 'version' ./package/app.manifest  | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'`
+echo "-----------------------------------------------------------------------"
+echo "Version Checking"
+echo "    globalConfig.json --> $CURR_VERSION"
+echo "    app.manifest      --> $APP_MANIFEST_VER"
+echo "    default/app.conf  --> $APP_CONF_VER"
+
+#  Check for version mismatches between app.conf, app.manifest, and globalConfig.json
+if [ "$CURR_VERSION" = "$APP_MANIFEST_VER" ] && [ "$APP_MANIFEST_VER" = "$APP_CONF_VER" ]; 
+  then
+    echo "all version settings match"
+  else
+    echo
+    echo "ERROR:   Versions are out of synch.  Please edit so that all 3 files reflect the same version number"
+    echo "Exiting now"
+    echo 
+    exit
+fi
+
+# update all 3 files with the new verison number
+echo "Incrementing version number from $CURR_VERSION to $NEXT_VERSION."
+sed  -i '' "s/\"version\": \"${CURR_VERSION}\"/\"version\": \"${NEXT_VERSION}\"/" ./package/app.manifest
+sed  -i '' "s/\"version\": \"${CURR_VERSION}\"/\"version\": \"${NEXT_VERSION}\"/" ./package/default/app.conf
 sed  -i '' "s/\"version\": \"${CURR_VERSION}\"/\"version\": \"${NEXT_VERSION}\"/" ./globalConfig.json
+# copy globalConfig.json to ./package/appserver/static/js/build/
 cp ./globalConfig.json ./package/appserver/static/js/build/globalConfig.json
+
 
 echo "-----------------------------------------------------------------------"
 echo "                      VERSIONING NOTE                                  "
