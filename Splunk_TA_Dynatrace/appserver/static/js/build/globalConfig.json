@@ -2,7 +2,7 @@
     "meta": {
         "name": "Splunk_TA_Dynatrace",
         "displayName": "Dynatrace Add-on for Splunk",
-        "version": "1.1.2",
+        "version": "1.2.0",
         "apiVersion": "3.0.0",
         "restRoot": "Splunk_TA_Dynatrace"
     },

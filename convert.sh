@@ -411,7 +411,10 @@ echo
 #              Shall we run ucc-gen?
 #-----------------------------------------------------
 while true; do
-    echo "Reminder:  If you need to uncomment entries in package/lib/requirements.txt, do NOT run ucc-gen at this point.\nUncommnet what you need and then run ucc-gen."
+    echo "Reminder:  If you need to uncomment entries in package/lib/requirements.txt, do NOT run ucc-gen at this point."
+    echo "           Uncommnet what you need and then run ucc-gen."
+    echo
+    echo
     read -p "Would you like to run ucc-gen --ta-version $NEXT_VERSION now? " yn
     case $yn in
         [Yy]* ) ucc-gen --ta-version "$NEXT_VERSION"; break;;
@@ -429,13 +432,13 @@ echo
 while true; do
     read -p "Would you like to package this app now? " yn
     case $yn in
-        [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}.tgz ./${AOB_TA_DIR}; cd ../; break;;
+        [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}_${NEXT_VERSION}.tgz ./${AOB_TA_DIR}; cd ../; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer y(es) or n(o).";;
     esac
 done
 echo
-echo "Your new UCC_based app can be found here: ./output/${AOB_TA_DIR}.tgz"
+echo "Your new UCC_based app can be found here: ./output/${AOB_TA_DIR}_${NEXT_VERSION}..tgz"
 echo
 
 
@@ -445,10 +448,9 @@ echo
 while true; do
     read -p "Would you like to submit this app for appInspect now? " yn
     case $yn in
-        [Yy]* ) ./submit_appInspect.sh ./output/${AOB_TA_DIR}.tgz; break;;
+        [Yy]* ) ./submit_appInspect.sh ./output/${AOB_TA_DIR}_${NEXT_VERSION}.tgz; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer y(es) or n(o).";;
     esac
 done
-echo
-
+echo ""
