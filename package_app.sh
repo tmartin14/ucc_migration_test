@@ -25,11 +25,12 @@ fi
 
 #remove any traiing / from the dir name
 AOB_TA_DIR=${AOB_TA_DIR%/}
-
 cd ./output
-COPYFILE_DISABLE=1 tar -cvz --exclude='*DS_Store' ${AOB_TA_DIR}.tgz ${AOB_TA_DIR}
+# Ensure file permissions are set correctly
+find ${AOB_TA_DIR} -type d -exec chmod 755 {} \;
+find ${AOB_TA_DIR} -type f -exec chmod 644 {} \;
+# Package the app
+COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}.tgz ${AOB_TA_DIR}
 cd ../
-
-
 
 #tar -cv --exclude='*DS_Store' not_multi_root > not_multi_root.tar

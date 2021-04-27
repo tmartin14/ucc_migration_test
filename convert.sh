@@ -433,7 +433,14 @@ echo
 while true; do
     read -p "Would you like to package this app now? " yn
     case $yn in
-        [Yy]* ) cd output; COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}_${NEXT_VERSION}.tgz ./${AOB_TA_DIR}; cd ../; break;;
+        [Yy]* ) cd output;
+                # Ensure file permissions are set correctly
+                find ${AOB_TA_DIR} -type d -exec chmod 755 {} \;;
+                find ${AOB_TA_DIR} -type f -exec chmod 644 {} \;;
+                # pakcage the app
+                COPYFILE_DISABLE=1 tar -czf ./${AOB_TA_DIR}_${NEXT_VERSION}.tgz ${AOB_TA_DIR};
+                cd ../;
+                break;;
         [Nn]* ) exit;;
         * ) echo "Please answer y(es) or n(o).";;
     esac
