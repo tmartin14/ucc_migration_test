@@ -1,4 +1,4 @@
-#  STOP - This project has been put on hold pending an upcoming update to Splunk's Add-On Builder project.   The AOB project will generate new versions of existing AOB TAs and this project should wait until that project completes in late June or early July 2021.
+#  STOP - This project has been put on hold pending an upcoming update to Splunk's Add-On Builder project.   The AOB project will generate new versions of existing AOB TAs and this project should wait until that project completes in late Fall 2021.
 ____
 If you still want to proceed and create a UCC-based version of an AOB TA this utility will work as is. 
 
