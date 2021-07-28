@@ -1,0 +1,828 @@
+{
+    "meta": {
+        "name": "Splunk_TA_AppDynamics",
+        "displayName": "Splunk Add-on for AppDynamics",
+        "version": "1.10.0",
+        "apiVersion": "3.0.0",
+        "restRoot": "Splunk_TA_AppDynamics",
+        "schemaVersion": "0.0.2"
+    },
+    "pages": {
+        "configuration": {
+            "title": "Configuration",
+            "description": "Set up your add-on",
+            "tabs": [
+                {
+                    "name": "proxy",
+                    "title": "Proxy",
+                    "entity": [
+                        {
+                            "field": "proxy_enabled",
+                            "label": "Enable",
+                            "type": "checkbox"
+                        },
+                        {
+                            "field": "proxy_type",
+                            "label": "Proxy Type",
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "http",
+                                        "value": "http"
+                                    },
+                                    {
+                                        "label": "socks4",
+                                        "value": "socks4"
+                                    },
+                                    {
+                                        "label": "socks5",
+                                        "value": "socks5"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "http"
+                        },
+                        {
+                            "field": "proxy_url",
+                            "label": "Host",
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 4096,
+                                    "errorMsg": "Max host length is 4096"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_port",
+                            "label": "Port",
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "number",
+                                    "range": [
+                                        1,
+                                        65535
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_username",
+                            "label": "Username",
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 50,
+                                    "errorMsg": "Max length of username is 50"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_password",
+                            "label": "Password",
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_rdns",
+                            "label": "Remote DNS resolution",
+                            "type": "checkbox"
+                        }
+                    ],
+                    "options": {
+                        "saveValidator": "function(formData) { if(!formData.proxy_enabled || formData.proxy_enabled === '0') {return true; } if(!formData.proxy_url) { return 'Proxy Host can not be empty'; } if(!formData.proxy_port) { return 'Proxy Port can not be empty'; } return true; }"
+                    }
+                },
+                {
+                    "name": "logging",
+                    "title": "Logging",
+                    "entity": [
+                        {
+                            "field": "loglevel",
+                            "label": "Log level",
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "DEBUG",
+                                        "value": "DEBUG"
+                                    },
+                                    {
+                                        "label": "INFO",
+                                        "value": "INFO"
+                                    },
+                                    {
+                                        "label": "WARNING",
+                                        "value": "WARNING"
+                                    },
+                                    {
+                                        "label": "ERROR",
+                                        "value": "ERROR"
+                                    },
+                                    {
+                                        "label": "CRITICAL",
+                                        "value": "CRITICAL"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "INFO"
+                        }
+                    ]
+                },
+                {
+                    "name": "additional_parameters",
+                    "title": "Add-on Settings",
+                    "entity": [
+                        {
+                            "field": "timeout",
+                            "label": "Request Timeout (in seconds)",
+                            "type": "text",
+                            "help": "Provide timeout in seconds for API requests to AppDynamics Controller.",
+                            "required": true,
+                            "defaultValue": "5",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "inputs": {
+            "title": "Inputs",
+            "description": "Manage your data inputs",
+            "table": {
+                "header": [
+                    {
+                        "field": "name",
+                        "label": "Name"
+                    },
+                    {
+                        "field": "interval",
+                        "label": "Interval"
+                    },
+                    {
+                        "field": "index",
+                        "label": "Index"
+                    },
+                    {
+                        "field": "disabled",
+                        "label": "Status"
+                    }
+                ],
+                "moreInfo": [
+                    {
+                        "field": "name",
+                        "label": "Name"
+                    },
+                    {
+                        "field": "interval",
+                        "label": "Interval"
+                    },
+                    {
+                        "field": "index",
+                        "label": "Index"
+                    },
+                    {
+                        "field": "disabled",
+                        "label": "Status"
+                    },
+                    {
+                        "field": "host_port",
+                        "label": "AppD Analytics Events URL"
+                    },
+                    {
+                        "field": "account_name",
+                        "label": "AppD GLOBAL Account Name"
+                    },
+                    {
+                        "field": "api_key",
+                        "label": "AppD API Key"
+                    },
+                    {
+                        "field": "duration",
+                        "label": "Time Duration (in minutes)"
+                    },
+                    {
+                        "field": "json_query",
+                        "label": "JSON Query"
+                    },
+                    {
+                        "field": "appd_userid",
+                        "label": "AppD UserID"
+                    },
+                    {
+                        "field": "appd_password",
+                        "label": "AppD Password"
+                    },
+                    {
+                        "field": "metrics_to_collect",
+                        "label": "Metrics to Collect"
+                    },
+                    {
+                        "field": "app_name",
+                        "label": "Application Name(s) or ID(s)"
+                    },
+                    {
+                        "field": "flatten_response",
+                        "label": "Separate events?"
+                    },
+                    {
+                        "field": "url_path",
+                        "label": "URL Path"
+                    },
+                    {
+                        "field": "params",
+                        "label": "Parameters"
+                    }
+                ],
+                "actions": [
+                    "edit",
+                    "enable",
+                    "delete",
+                    "clone"
+                ]
+            },
+            "services": [
+                {
+                    "template": "input_with_helper",
+                    "name": "appdynamics_analytics_api",
+                    "title": "AppDynamics Analytics API",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "host_port",
+                            "label": "AppD Analytics Events URL",
+                            "help": "Enter the URL and Port for your AppDynamics Analytics Events service endpoint (i.e.: http://<events_service_endpoint>:9080)",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "https://analytics.api.appdynamics.com",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "https://analytics.api.appdynamics.com"
+                            }
+                        },
+                        {
+                            "field": "account_name",
+                            "label": "AppD GLOBAL Account Name",
+                            "help": "The global account name, as shown in the Controller UI License page.  (X-Events-API-AccountName)",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "customer1",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "customer1"
+                            }
+                        },
+                        {
+                            "field": "api_key",
+                            "label": "AppD API Key",
+                            "help": "Your AppDynamics Analytics API Key (X-Events-API-Key)",
+                            "required": true,
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "duration",
+                            "label": "Time Duration (in minutes)",
+                            "help": "The time period (in minutes) that you wish to retrieve data for.  e.g.:  5 = retrieve data for the past 5 minutes.  ",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "5",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "5"
+                            }
+                        },
+                        {
+                            "field": "json_query",
+                            "label": "JSON Query",
+                            "help": "Enter the label and query in JSON.  e.g: \n   {  \"label\": \"high_population\",   \"query\": \"SELECT * FROM county WHERE population>50000\" }",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "{ \"label\": \"high_population\",   \"query\": \"SELECT * FROM county WHERE population>50000\" }",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "appdynamics_summary",
+                    "title": "AppDynamics Summary",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "host_port",
+                            "label": "AppD Collector URL",
+                            "help": "Enter the URL and Port for your AppDynamics Collector  (i.e.: http://192.168.0.123:8090)",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "https://<your_account_name>.saas.appdynamics.com",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "http://demo.appdynamics.com:8090"
+                            }
+                        },
+                        {
+                            "field": "appd_userid",
+                            "label": "AppD UserID",
+                            "help": "The userid you use to login to AppDynamics",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "appd_password",
+                            "label": "AppD Password",
+                            "help": "The password you use to login to AppDynamics",
+                            "required": true,
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "account_name",
+                            "label": "AppD Account Name",
+                            "help": "For most on-premise deployments this will be the default value of 'customer1'.   For SaaS deployments this will be your account name. ",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "customer1",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "duration",
+                            "label": "Time Duration (in minutes)",
+                            "help": "The time period (in minutes) that you wish to retrieve data for.  e.g.:  5 = retrieve data for the past 5 minutes.  ",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "5",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "metrics_to_collect",
+                            "label": "Metrics to Collect",
+                            "help": "Notes: 1. Infrastructure Perf. & Business Transactions can produce large amounts of data. 2. In larger environments(50+ applications), use a separate input per metric set for parallel execution.",
+                            "required": true,
+                            "type": "multipleSelect",
+                            "defaultValue": "apm~euem~events~violations",
+                            "options": {
+                                "delimiter": "~",
+                                "items": [
+                                    {
+                                        "value": "apm",
+                                        "label": "Application Performance"
+                                    },
+                                    {
+                                        "value": "euem",
+                                        "label": "End User Experience"
+                                    },
+                                    {
+                                        "value": "events",
+                                        "label": "Application Events"
+                                    },
+                                    {
+                                        "value": "violations",
+                                        "label": "Health Rule Violations"
+                                    },
+                                    {
+                                        "value": "infra",
+                                        "label": "Infrastructure Performance"
+                                    },
+                                    {
+                                        "value": "bt",
+                                        "label": "Business Transactions"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "app_name",
+                            "label": "Application Name(s) or ID(s)",
+                            "help": "Leave blank to retrieve ALL applications. Each application is 1 API call per selected metric set (4 sets * 30 apps = 120 API calls). Please be mindful of the additional load on your AppD Controller.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "AppName1,AppName2,AppName3"
+                            }
+                        },
+                        {
+                            "field": "flatten_response",
+                            "label": "Separate events?",
+                            "help": "Check this box if you would like to separate the JSON payload into separate Splunk events.  ",
+                            "required": false,
+                            "type": "checkbox"
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "appdynamics_api",
+                    "title": "AppDynamics API",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "host_port",
+                            "label": "AppD Collector URL",
+                            "help": "Enter the URL and Port for your AppDynamics Collector  (i.e.: http://192.168.0.123:8090)",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "https://<your_account_name>.saas.appdynamics.com",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "http://demo.appdynamics.com:8090"
+                            }
+                        },
+                        {
+                            "field": "appd_userid",
+                            "label": "AppD UserID",
+                            "help": "The userid you use to login to AppDynamics",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "appd_password",
+                            "label": "AppD Password",
+                            "help": "The password you use to login to AppDynamics",
+                            "required": true,
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "account_name",
+                            "label": "AppD Account Name",
+                            "help": "For most on-premise deployments this will be the default value of 'customer1'.   For SaaS deployments this will be your account name. ",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "customer1",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "customer1"
+                            }
+                        },
+                        {
+                            "field": "duration",
+                            "label": "Time Duration (in minutes)",
+                            "help": "The time period (in minutes) that you wish to retrieve data for.  e.g.:  5 = retrieve data for the past 5 minutes.  ",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "5",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "app_name",
+                            "label": "Application Name(s)",
+                            "help": "The names (or IDs) of your Application(s) in AppDynamics   (comma separated list or blank to retrieve for ALL applications)",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "ApplicationA,ApplicationB,ApplicationC"
+                            }
+                        },
+                        {
+                            "field": "url_path",
+                            "label": "URL Path",
+                            "help": "e.g.:  /metric-data    --or-- /events   --or--  /problems/healthrule-violations",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "/metric-data",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "/metric-data"
+                            }
+                        },
+                        {
+                            "field": "params",
+                            "label": "Parameters",
+                            "help": "e.g.: /metric-data  REQUIRES  metric-path=<APPD FULL PATH> (hint: use 'Copy Full Path' in the AppDynamics Metric Browser).  Wildcards are  also acceptable.",
+                            "required": true,
+                            "type": "text",
+                            "defaultValue": "metric-path=Business Transaction Performance|Business Transactions|<Tier>|<BT Name>|<metric name>",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "metric-path=Business Transaction Performance|Business Transactions|<Tier>|<BT Name>|<metric name>"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -184,8 +184,6 @@ done
 echo Finished with Alert Actions
 
 
-
-
 # -------------------------------------------------------------------------------
 #          Now let's start processing any modular inputs
 # -------------------------------------------------------------------------------
@@ -201,6 +199,32 @@ do
     rm "input_module_$REST_API_INPUT".py 2> /dev/null
     rm "$REST_API_INPUT".py 2> /dev/null
 done
+
+
+#-----------------------------------------------------
+# Check all *.py files for tab indentation errors
+#-----------------------------------------------------
+echo 
+echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
+got_tabs=$(grep -n '\t' input_module_*.py | wc -l)
+if [ $got_tabs != "0" ] 
+  then
+    echo "****************************************************************"
+    echo "  Issues Found.  These must be fixed before running ucc-gen. "
+    echo "****************************************************************"
+    grep -n '\t' input_module_*.py 
+    echo "****************************************************************"
+    read -p "Would you like to continue without fixing? (y/n)" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) echo "Exiting"; exit;;
+        * ) echo "Please answer y(es) or n(o).";;
+    esac
+  else
+    echo "no tab/indentation issues found."
+fi  
+echo
+echo
 
 for OUTPUT in $(ls input_module_*.py | xargs -L1 | awk -F"input_module_" '{print $2}')
 do
@@ -352,9 +376,9 @@ APP_CONF_VER=`grep '^version' ./package/default/app.conf | grep -o '[^: d]*$' | 
 APP_MANIFEST_VER=`grep 'version' ./package/app.manifest  | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'`
 echo "-----------------------------------------------------------------------"
 echo "Version Checking"
-echo "    globalConfig.json --> $CURR_VERSION"
-echo "    app.manifest      --> $APP_MANIFEST_VER"
-echo "    default/app.conf  --> $APP_CONF_VER"
+echo "    appserver/static/js/build/globalConfig.json --> $CURR_VERSION"
+echo "    app.manifest                                --> $APP_MANIFEST_VER"
+echo "    default/app.conf                            --> $APP_CONF_VER"
 
 #  Check for version mismatches between app.conf, app.manifest, and globalConfig.json
 if [ "$CURR_VERSION" = "$APP_MANIFEST_VER" ] && [ "$APP_MANIFEST_VER" = "$APP_CONF_VER" ]; 
@@ -397,23 +421,31 @@ echo
 #-----------------------------------------------------
 # Check all *.py files for tab indentation errors
 #-----------------------------------------------------
+echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
 got_tabs=$(grep -n '\t' ./package/bin/*.py | wc -l)
 if [ $got_tabs != "0" ] 
   then
-    echo "Checking for potential issues with tabs and/or indentation.   (python3 doesn't like mixing tabs and spaces)"
-    echo "  If found, these must be fixed before running ucc-gen.  Exiting now"
+    echo "****************************************************************"
+    echo "  Issues Found.  These must be fixed before running ucc-gen. "
+    echo "****************************************************************"
     grep -n '\t' ./package/bin/*.py 
+    echo "****************************************************************"
+    echo "Exiting"
     exit
+  else
+    echo "no tab/indentation issues found."
 fi  
 echo
 echo
+
+
 
 #-----------------------------------------------------
 #              Shall we run ucc-gen?
 #-----------------------------------------------------
 while true; do
     echo "Reminder:  If you need to uncomment entries in package/lib/requirements.txt, do NOT run ucc-gen at this point."
-    echo "           Uncommnet what you need and then run ucc-gen."
+    echo "           Uncomment what you need and then run ucc-gen."
     echo
     echo
     read -p "Would you like to run ucc-gen --ta-version $NEXT_VERSION now? " yn
@@ -456,7 +488,7 @@ echo
 while true; do
     read -p "Would you like to submit this app for appInspect now? " yn
     case $yn in
-        [Yy]* ) ./submit_appInspect.sh ./output/${AOB_TA_DIR}_${NEXT_VERSION}.tgz; break;;
+        [Yy]* ) echo "running  ./submit_appInspect.sh ./output/${AOB_TA_DIR}_${NEXT_VERSION}.tgz";./submit_appInspect.sh ./output/${AOB_TA_DIR}_${NEXT_VERSION}.tgz; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer y(es) or n(o).";;
     esac
