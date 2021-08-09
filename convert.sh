@@ -444,8 +444,11 @@ echo
 #              Shall we run ucc-gen?
 #-----------------------------------------------------
 while true; do
-    echo "Reminder:  If you need to uncomment entries in package/lib/requirements.txt, do NOT run ucc-gen at this point."
+    echo "Reminders:  "
+    echo "    1)  If you need to uncomment entries in package/lib/requirements.txt, do NOT run ucc-gen at this point."
     echo "           Uncomment what you need and then run ucc-gen."
+    echo "    2)  If you are going to place this app into a github repo and us a github action for building, do NOT run ucc-gen at this point."
+    echo "           ucc-gen will run as part of the github action on each commit."
     echo
     echo
     read -p "Would you like to run ucc-gen --ta-version $NEXT_VERSION now? " yn
