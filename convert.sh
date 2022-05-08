@@ -244,6 +244,9 @@ do
     #  split $OUTPUT file into header and footer  (pre-class() and post() statements)
     # -------------------------------------------------------------------------------
     cat ./$OUTPUT | sed '/^class /q' | sed '/^class /d' > tmp_header
+
+    # import_declare_test adds the ./lib directory to the path and needs to happen early
+    sed -i '' 's/^import modinput_wrapper\.base_modinput/import import_declare_test\nimport modinput_wrapper\.base_modinput\n/g' tmp_header
     cat ./$OUTPUT | sed -n '/^class /,$p'  > tmp_footer
 
     # -------------------------------------------------------------------------------
