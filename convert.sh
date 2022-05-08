@@ -244,6 +244,9 @@ do
     #  split $OUTPUT file into header and footer  (pre-class() and post() statements)
     # -------------------------------------------------------------------------------
     cat ./$OUTPUT | sed '/^class /q' | sed '/^class /d' > tmp_header
+
+    # import_declare_test adds the ./lib directory to the path and needs to happen early
+    sed -i '' 's/^import modinput_wrapper\.base_modinput/import import_declare_test\nimport modinput_wrapper\.base_modinput\n/g' tmp_header
     cat ./$OUTPUT | sed -n '/^class /,$p'  > tmp_footer
 
     # -------------------------------------------------------------------------------
@@ -352,10 +355,20 @@ rm ./package/bin/*.pyc 2> /dev/null
 rm ./package/bin/__pycache__ 2> /dev/null
 rm ./package/bin/*_rh*.py 2> /dev/null
 rm ./package/bin/input_module_*.py 2> /dev/null
+rm ./package/aob_events_in_meta.json
+rm ./package/default/restmap.conf
+rm ./package/default/web.conf
+rm ./package/default/data/ui/views/configuration.xml
+rm ./package/default/data/ui/views/inputs.xml
+rm ./package/default/inputs.conf
 
 rm -rf ./package/locale
 rm -rf ./package/bin/*/aob_py*/
 rm -rf ./package/bin/*_declare.py
+rm -rf ./package/appserver/static/js/build
+rm -rf ./package/appserver/templates
+rm -rf ./package/README
+rm -rf ./package/*.aob_meta
 rm ./package/README/addon_builder.conf.spec
 rm ./package/bin/*/modalert_*_helper.py 2> /dev/null
 rm ./package/bin/*/alert_actions_base.py 2> /dev/null
