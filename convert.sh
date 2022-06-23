@@ -382,7 +382,7 @@ echo Done.
 #     Now let's check the versioning and update the version number
 # -------------------------------------------------------------------------------
 echo
-CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^: d]*$' | sed 's/,//;s/"//g'`
+CURR_VERSION=`grep "version" ./globalConfig.json | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'`
 NEXT_VERSION=`echo $CURR_VERSION | awk -F. -v OFS=. '{$2++;print}'`
 
 APP_CONF_VER=`grep '^version' ./package/default/app.conf | grep -o '[^: d]*$' | sed 's/,$//;s/"//g'` 
