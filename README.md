@@ -1,3 +1,5 @@
+## NOTE:   This code is no longer supported.  While this may still work for many TA's, it's no longer a sure thing so YMMV.
+
 # ucc Migration Test
 
 This file contains source for a Unix shell script to perform a migration of modular inputs from a Splunk Add-On Builder(AOB) generated source base into a new Splunk UCC-based Add-On (a.k.a. TA).  Splunk Universal Configuration Console (UCC) format provides a consistent user interface across all Splunk Add-Ons.  
